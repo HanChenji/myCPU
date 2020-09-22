@@ -2,7 +2,7 @@
 `define DATA_WIDTH 32
 `define ADDR_WIDTH 5
 
-module regFile(
+module myCPU_regFile(
 
     input clk,
     input rst,
@@ -12,8 +12,9 @@ module regFile(
     input [`DATA_WIDTH - 1:0] wdata,
    
     input [`ADDR_WIDTH - 1:0] raddr1,
-    output [`DATA_WIDTH - 1:0] rdata1,
     input [`ADDR_WIDTH - 1:0] raddr2,
+    
+    output [`DATA_WIDTH - 1:0] rdata1,
     output [`DATA_WIDTH - 1:0] rdata2
 
 );
