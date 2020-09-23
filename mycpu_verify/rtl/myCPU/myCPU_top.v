@@ -61,14 +61,15 @@ module myCPU_top(
         IF2ID_INSTRUCTION <= inst_sram_rdata;
     end
 
+    assign instruction = IF2ID_INSTRUCTION;
+ 
     wire[31:0] instruction;
     wire[31:0] rsCont, rtCont;
-    wire[4:0] rd;
+    wire[4:0] rd, rt;
     wire[15:0] immediate;
-    wire[5:0] ALUop, ALUfunc;
-
-    assign instruction = IF2ID_INSTRUCTION;
-    
+    wire[3:0] aluop;
+    wire C1, C2, C3, C4, C5, C6;
+   
     myCPU_ID ID_module(
         // input
         .clk(clk),
@@ -82,26 +83,44 @@ module myCPU_top(
         .rsCont(rsCont),
         .rtCont(rtCont),
         .rd(rd),
+        .rd(rt),
         .immediate(immediate),
-        .ALUop(ALUop),
-        .ALUfunc(ALUfunc)
+        .aluop(aluop),
+        .C1(C1),
+        .C2(C2),
+        .C3(C3),
+        .C4(C4),
+        .C5(C5),
+        .C6(C6),
     );
 
 
     // ID/EXE pipeline register 
     reg[31:0] ID2EXE_RSCONT, ID2EXE_RTCONT;
-    reg[4:0] ID2EXE_RD;
+    reg[4:0] ID2EXE_RD, ID2EXE_RT;
     reg[15:0] ID2EXE_IMMEDIATE;
-    reg[5:0] ID2EXE_ALUOP, ID2EXE_ALUFUNC;
+    reg[3:0] ID2EXE_ALUOP;
+    reg ID2EXE_C1;
+    reg ID2EXE_C2;
+    reg ID2EXE_C3;
+    reg ID2EXE_C4;
+    reg ID2EXE_C5;
+    reg ID2EXE_C6;
 
     always @(posedge clk)
     begin
-        ID2EXE_RSCONT <= rsCont;
-        ID2EXE_RTCONT <= rtCont;
-        ID2EXE_RD <= rd;
+        ID2EXE_RSCONT    <= rsCont;
+        ID2EXE_RTCONT    <= rtCont;
+        ID2EXE_RD        <= rd;
+        ID2EXE_RT        <= rt;
         ID2EXE_IMMEDIATE <= immediate;
-        ID2EXE_ALUOP <= ALUop;
-        ID2EXE_FUNC <= AlUfunc;
+        ID2EXE_ALUOP     <= aluop;
+        ID2EXE_C1        <= C1;
+        ID2EXE_C2        <= C2;
+        ID2EXE_C3        <= C3;
+        ID2EXE_C4        <= C4;
+        ID2EXE_C5        <= C5;
+        ID2EXE_C6        <= C6;
     end
 
 
