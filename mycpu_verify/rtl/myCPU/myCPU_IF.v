@@ -19,15 +19,18 @@ module myCPU_IF (
     input jen,
     input allowIN,
 
-    output reg[31:0] PC,
-    output reg instRequest;
+    output inst_sram_en,
+    output[31:0] inst_sram_addr
+
 );
 
+    reg[31:0] PC,
+    reg instRequest;
     always @(posedge clk, posedge rst)
     begin
         if(rst)
         begin
-            PC <= 32'b0;
+            PC <= 0xbfc00000;
             instRequest <= 1'b0;
         end
         else if(allowIN)
@@ -37,6 +40,9 @@ module myCPU_IF (
             else // NPC = PC +4
                 PC <= PC + 4;
     end
+
+    assign inst_sram_en = instRequest;
+    assign inst_sram_addr = PC;
 
 endmodule
 

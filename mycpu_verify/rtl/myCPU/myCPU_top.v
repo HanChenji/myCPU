@@ -34,36 +34,14 @@ module myCPU_top(
         .jen(),
         .allowIN(),
         // output
-        .PC(PC),
-        .instRequest(instRequest)
+        .inst_sram_en(inst_sram_en),
+        .inst_sram_addr(inst_sram_addr),
     );
 
     // connect the PC module with the SRAM module 
-    assign inst_sram_en = instRequest;
     assign inst_sram_wen = 4'b0;
-    assign inst_sram_addr = PC;
     assign inst_sram_wdata = 32'b0;
     
-    // IF/ID pipeline register 
-    reg[31:0] IF2ID_INSTRUCTION;
-/*
-    always @(posedge clk)
-    begin
-        if(instRequest)
-            IF2ID_INSTRUCTION <= inst_sram_rdata;
-        else
-            IF2ID_INSTRUCTION <= IF2ID_INSTRUCTION; 
-    end
-*/
-
-    always @(posedge clk)
-    begin
-        IF2ID_INSTRUCTION <= inst_sram_rdata;
-    end
-
-    assign instruction = IF2ID_INSTRUCTION;
- 
-    wire[31:0] instruction;
     wire[31:0] rsCont, rtCont;
     wire[4:0] rd, rt;
     wire[15:0] immediate;
@@ -74,7 +52,7 @@ module myCPU_top(
         // input
         .clk(clk),
         .rst(restn),
-        .instruction(instruction),
+        .instruction(inst_sram_rdata),
         .wen(),
         .wdata(),
         .waddr(),
@@ -100,12 +78,7 @@ module myCPU_top(
     reg[4:0] ID2EXE_RD, ID2EXE_RT;
     reg[15:0] ID2EXE_IMMEDIATE;
     reg[3:0] ID2EXE_ALUOP;
-    reg ID2EXE_C1;
-    reg ID2EXE_C2;
-    reg ID2EXE_C3;
-    reg ID2EXE_C4;
-    reg ID2EXE_C5;
-    reg ID2EXE_C6;
+    reg ID2EXE_C1, ID2EXE_C2, ID2EXE_C3, ID2EXE_C4, ID2EXE_C5, ID2EXE_C6;
 
     always @(posedge clk)
     begin

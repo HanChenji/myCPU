@@ -41,19 +41,16 @@ module myCPU_ID (
     	.rst(rst),
     	.clk(clk),
     	//output
-    	.rdata1(rscont),
-    	.rdata2(rtcont)
+    	.rdata1(rsCont),
+    	.rdata2(rtCont)
     );
 
-    assign rsCont = rscont;
-	assign rtCont = rtcont;
-    assign rt = instruction[:];
-    assign rd = instruction[:];
+    assign rt       = instruction[:];
+    assign rd       = instruction[:];
     assign immediate = instruction[:];
     
-    wire op = instruction[31:26];
-    wire func = instruction[5:0];
-
+    wire op         = instruction[31:26];
+    wire func       = instruction[5:0];
 	wire inst_addu  = op==6’b0 && func==6’b100001;
 	wire inst_subu  = op==6’b0 && func==6’b100010;
 	wire inst_slt   = op==6’b0 && func==6’b101010;
