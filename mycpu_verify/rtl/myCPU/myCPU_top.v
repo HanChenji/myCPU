@@ -30,8 +30,8 @@ module myCPU_top(
         // input
         .clk(clk),
         .rst(restn),
-        .offset(),
-        .jen(),
+        .offset(jmpAddrDisp),
+        .jen(C1),
         .allowIN(),
         // output
         .inst_sram_en(inst_sram_en),
@@ -42,9 +42,9 @@ module myCPU_top(
     assign inst_sram_wen = 4'b0;
     assign inst_sram_wdata = 32'b0;
     
-    wire[31:0] rsCont, rtCont;
-    wire[4:0] rd, rt;
-    wire[15:0] immediate;
+    wire[31:0] A, B;
+    wire[4:0] targetReg;
+    wire[31:0] jmpAddrDisp;
     wire[3:0] aluop;
     wire C1, C2, C3, C4, C5, C6;
    
@@ -58,11 +58,10 @@ module myCPU_top(
         .waddr(),
 
         // output
-        .rsCont(rsCont),
-        .rtCont(rtCont),
-        .rd(rd),
-        .rd(rt),
-        .immediate(immediate),
+        .A(A),
+        .B(B),
+        .targetReg(targetReg),
+        .jmpAddrDisp(jmpAddrDisp),
         .aluop(aluop),
         .C1(C1),
         .C2(C2),
@@ -74,24 +73,18 @@ module myCPU_top(
 
 
     // ID/EXE pipeline register 
-    reg[31:0] ID2EXE_RSCONT, ID2EXE_RTCONT;
-    reg[4:0] ID2EXE_RD, ID2EXE_RT;
-    reg[15:0] ID2EXE_IMMEDIATE;
+    reg[31:0] ID2EXE_A, ID2EXE_B;
+    reg[4:0] ID2EXE_TARGETREG;
     reg[3:0] ID2EXE_ALUOP;
-    reg ID2EXE_C1, ID2EXE_C2, ID2EXE_C3, ID2EXE_C4, ID2EXE_C5, ID2EXE_C6;
+    reg ID2EXE_C3, ID2EXE_C5, ID2EXE_C6;
 
     always @(posedge clk)
     begin
-        ID2EXE_RSCONT    <= rsCont;
-        ID2EXE_RTCONT    <= rtCont;
-        ID2EXE_RD        <= rd;
-        ID2EXE_RT        <= rt;
-        ID2EXE_IMMEDIATE <= immediate;
+        ID2EXE_A         <= A;
+        ID2EXE_B         <= B;
+        ID2EXE_TARGETREG <= targetReg;
         ID2EXE_ALUOP     <= aluop;
-        ID2EXE_C1        <= C1;
-        ID2EXE_C2        <= C2;
         ID2EXE_C3        <= C3;
-        ID2EXE_C4        <= C4;
         ID2EXE_C5        <= C5;
         ID2EXE_C6        <= C6;
     end

@@ -2,31 +2,26 @@
 
 
 module myCPU_EX(
-    input[31:0] rsCont,
-    input[31:0] rtCont,
-    input[4:0]  rd,
-    input[4:0]  rt,
-    input[15:0] immediate,
+    input[31:0] A,
+    input[31:0] B,
     input[3:0]  aluop,
+    input C5,
 
-    output , // ?
-
-
+    output[31:0] result 
 );
 
     
     wire overFlow, carryOut, zero;
-    wire[31:0] aluResult;
     myCPU_alu ALU(
         // input
-        .A(rsCont),
-        .B(rtCont),
+        .A(A),
+        .B(B),
         .ALUop(aluop),
         //output
         .overFlow(overFlow),
         .carryOut(carryOut),
         .zero(zero),
-        .aluResult(aluResult)
+        .aluResult(result)
     );
 
 

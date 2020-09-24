@@ -35,8 +35,8 @@ module myCPU_IF (
         end
         else if(allowIN)
             instRequest <= 1'b1;
-            if(jen) // NPC = PC + offset
-                PC <= PC + offset;
+            if(jen) // NPC = PC + 4 + offset ? why +4 ?
+                PC <= PC + 4 + offset;
             else // NPC = PC +4
                 PC <= PC + 4;
     end
