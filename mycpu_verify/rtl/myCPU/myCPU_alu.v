@@ -33,8 +33,8 @@ module myCPU_alu(
 
     assign Operand2Bit32 = (ALUop==4'b____) ? {1'b0,B[30:0]}      : // overflow for ADD 
                            (ALUop==4'b____) ? (~{1'b0,B[30:0]}+1) : // overflow for SUB
-                           (ALUop==4'b____) ? (~B+1)              : // SUB
-                                                                   B ; // ADD
+                           (ALUop==4'b____) ? (~B+1)              : // SUBU
+                                                                   B ; // ADDU
 
     wire[31:0] Bit32Add = Operand1Bit32 + Operand2Bit32 ;
 
@@ -48,7 +48,8 @@ module myCPU_alu(
                                      {32{0}}               ;
 
 
-    assign aluResult = (ALUop==4'b____||ALUop==4'b____) ? Bit32Add : // Add || SUB || ADDU || SUBU
+    assign aluResult = (ALUop==4'b____||ALUop==4'b____) ? Bit32Add : // ADDU || SUBU
+                       (ALUop==4'b____)                 ? Bit33Add[31:0] : // ADD || SUB
                        (ALUop==4'b____)                 ? {31{0},Bit33Add[32]} : // SLT
                        (ALUop==4'b____)                 ? {31{0},carryout} :   // SLTU
                        (ALUop==4'b____)                 ? (A|B) : // OR
