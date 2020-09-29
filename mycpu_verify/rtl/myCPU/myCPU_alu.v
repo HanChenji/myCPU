@@ -42,9 +42,24 @@ module myCPU_alu(
     assign overFlow = (ALUop==4'b____||ALUop==4'b____) ? Bit33Add[32] ^ Bit32Add[31] : 0 ;
     assign carryout = (ALUop==4'b____||ALUop==4'b____) ? Bit33Add[32] : 0 ;
 
-    assign aluResult = (ALUop==4'b____||ALUop==4'b____) ? Bit32Add : // Add || SUB 
+
+    wire[4:0] shiftCont = A[4:0] ; // SLL 
+    wire[31:0] sra_operand = B[31] ? ~({32{1}}>>shiftCont) :
+                                     {32{0}}               ;
+
+
+    assign aluResult = (ALUop==4'b____||ALUop==4'b____) ? Bit32Add : // Add || SUB || ADDU || SUBU
                        (ALUop==4'b____)                 ? {31{0},Bit33Add[32]} : // SLT
                        (ALUop==4'b____)                 ? {31{0},carryout} :   // SLTU
+                       (ALUop==4'b____)                 ? (A|B) : // OR
+                       (ALUop==4'b____)                 ? (A&B) : // AND
+                       (ALUop==4'b____)                 ? (A^B) : // XOR
+                       (ALUop==4'b____)                 ? ~(A|B) : // NOR
+                       (ALUop==4'b____)                 ? B<<shiftCont : // SLL || SLLV
+                       (ALUop==4'b____)                 ? B>>shiftCont : // SRL || SRLV
+                       (ALUop==4'b____)                 ? (sra_operand | (B>>shiftCont) ) : // SRA || SRAV
+
+
 
 
 
