@@ -16,7 +16,7 @@ module myCPU_IF (
     input clk,
     input rst,
     input [31:0] offset,
-    input jen,
+    input[1:0] jen,
     input allowIN,
 
     output inst_sram_en,
@@ -35,8 +35,10 @@ module myCPU_IF (
         end
         else if(allowIN)
             instRequest <= 1'b1;
-            if(jen) // NPC = PC + 4 + offset ? why +4 ?
+            if(jen==2'b01) // NPC = PC + 4 + offset ? why +4 ?
                 PC <= PC + 4 + offset;
+            else if (jen==2'b10||jen==2'b11)
+                PC <= offset;
             else // NPC = PC +4
                 PC <= PC + 4;
     end

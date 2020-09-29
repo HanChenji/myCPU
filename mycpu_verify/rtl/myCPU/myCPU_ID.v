@@ -6,7 +6,7 @@
 
    | INSTRUCTION                    | ALUOp |
    ------------------------------------------
-   | ADDU, ADDIU, LW, SW            | 0000  |
+   | ADDU, ADDIU, LW, SW, JAL       | 0000  |
    ------------------------------------------
    | SUBU                           | 0001  |
    ------------------------------------------
@@ -22,13 +22,13 @@
    ------------------------------------------
    | NOR                            | 0111  |
    ------------------------------------------
-   | SLLV                           | 1000  |
+   | SLLV, SLL                      | 1000  |
    ------------------------------------------
    |                                | 1001  |
    ------------------------------------------
-   | SRLV                           | 1010  |
+   | SRLV, SRL                      | 1010  |
    ------------------------------------------
-   | SRAV                           | 1011  |
+   | SRAV, SRA                      | 1011  |
    ------------------------------------------
    ------------------------------------------
    ------------------------------------------
@@ -60,6 +60,7 @@ module myCPU_ID (
 	input clk,
 	input rst,
 
+    input[31:0] PC,
     input[31:0] instruction,
 
     input wen,
@@ -72,10 +73,10 @@ module myCPU_ID (
 	//output[4:0] rt,
 	output[4:0] targetReg,
     //output[31:0] signedImmediate,
-    output[31:0] jmpAddrDisp,
+    output[31:0] jmpAddr,
 
     output[3:0] aluop,
-    output C1,
+    output[1:0] C1,
     //output C2,
     output C3,
     //output C4,
@@ -124,6 +125,7 @@ module myCPU_ID (
 	wire inst_srl   = op==6'b0 && func==6'b000010;
 	wire inst_srav 	= op==6'b0 && func==6'b000111;
 	wire inst_sra 	= op==6'b0 && func==6'b000011;
+    wire inst_jr    = op==6'b0 && func==6'b001000;
 	wire inst_addiu = op==6'b001001;
 	wire inst_lw    = op==6'b100011;
 	wire inst_sw    = op==6'b101011;
@@ -132,28 +134,44 @@ module myCPU_ID (
 	wire inst_blez  = op==6'b000110;
 	wire inst_bgtz  = op==6'b000111;
     wire inst_lui   = op==6'b001111;
+    wire inst_jal   = op==6'b000011;
 
-	assign C1 		= ( inst_beq  & (rsCont == rtCont)  )  |
+	assign C1[0]	= ( inst_beq  & (rsCont == rtCont)  )  |
                       ( inst_bne  & ~(rsCont == rtCont) )  |
                       ( inst_blez & (rsCont[31] == 1)   )  | 
-                      ( inst_bgtz & ~(rsCont[31] == 1)  )  ; // 1: jump, 0: don't jump
+                      ( inst_bgtz & ~(rsCont[31] == 1)  )  |
+                        inst_jr                            ; // 1: jump, 0: don't jump
+    assign C1[1]    = inst_jal;
+    /* C1 == 2'b00 -> no branch
+     * C1 == 2'b01 -> branch a offset
+     * C1 == 2'b10 -> brach unconditionaly @ {PC[31:28],im,2'b00} // JAL
+     * C1 == 2'b11 -> branch @ rtCont // JR
+     */
+
 	assign C3 		= inst_lw; // 1: mem->reg 0: alu->reg
-	assign C5 		= ~(inst_sw | C1); // reg file wen
+	assign C5 		= ~(inst_sw | C1[0]); // reg file wen
 	assign C6 		= inst_sw; // mem wen 
 	
 	wire C4 		= inst_addiu | inst_lw | inst_lui; // target reg: 1: rt, 0: rd
     wire C2 		= inst_addiu | inst_lw | inst_sw;// 1: im-> B; 0: rt->B
     wire C7         = inst_sll | inst_srl | inst_sra; // 1: ra->A 0: rs->A
        
-    assign A = C7 ? unsignExtedRa : 
-                    rscont        ;
+    assign A = C7       ? unsignExtedRa : 
+               inst_jal ? PC            :
+                          rscont        ;
     assign B = C2       ? signExtedIm :
                inst_lui ? upperIm     :
+               inst_jal ? 32'b1000     :
                           rtcont      ;
 
-    assign targetReg = C4 ? rt : rd;
+    assign targetReg = C4       ? rt       :
+                       inst_jal ? 5'b11111 :
+                                  rd       ;
     //assign signedImmediate = signExtedIm;
-    assign jmpAddrDisp = signExtedIm << 2 ;
+    assign jmpAddr  = C1==2'b01 ? signExtedIm << 2 :
+                      C1==2'b10 ? {PC[31:28],instruction[25:0],2'd0} :
+                                  rsCont;
+
 	
     assign aluop[0] = inst_subu | inst_sltu | inst_or | inst_lui | inst_nor | inst_srav | inst_sra;
 	assign aluop[1] = inst_slt | inst_sltu | inst_xor | inst_nor | inst_srlv | inst_srl | inst_srav | inst_sra;
@@ -163,7 +181,6 @@ module myCPU_ID (
 
 endmodule
 
-// LUI: {32{0}} | upperIm -> rt 
 
 
 
