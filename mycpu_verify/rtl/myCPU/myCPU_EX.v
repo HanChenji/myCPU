@@ -7,7 +7,8 @@ module myCPU_EX(
     input[3:0]  aluop,
     input C5,
 
-    output[31:0] result 
+    output[31:0] result,
+    output C5I
 );
 
     
@@ -24,26 +25,8 @@ module myCPU_EX(
         .aluResult(result)
     );
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    assign C5I = C5 ? ~overFlow :
+                      0         ;
 
 
 endmodule

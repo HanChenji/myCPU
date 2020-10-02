@@ -30,15 +30,16 @@ module myCPU_top(
         // input
         .clk(clk),
         .rst(restn),
-        .offset(jmpAddrDisp),
+        .offset(jmpAddr),
         .jen(C1),
         .allowIN(),
         // output
         .inst_sram_en(inst_sram_en),
-        .inst_sram_addr(inst_sram_addr),
+        .inst_sram_addr(PC),
     );
 
     // connect the PC module with the SRAM module 
+    assign inst_sram_addr = PC;
     assign inst_sram_wen = 4'b0;
     assign inst_sram_wdata = 32'b0;
     
@@ -46,13 +47,16 @@ module myCPU_top(
     wire[4:0] targetReg;
     wire[31:0] jmpAddrDisp;
     wire[3:0] aluop;
-    wire C1, C2, C3, C4, C5, C6;
+    wire C2, C3, C4, C5, C6;
+    wire[1:0] C1;
    
     myCPU_ID ID_module(
         // input
         .clk(clk),
         .rst(restn),
+        .PC(PC),
         .instruction(inst_sram_rdata),
+
         .wen(),
         .wdata(),
         .waddr(),
@@ -61,12 +65,12 @@ module myCPU_top(
         .A(A),
         .B(B),
         .targetReg(targetReg),
-        .jmpAddrDisp(jmpAddrDisp),
+        .jmpAddr(jmpAddr),
         .aluop(aluop),
         .C1(C1),
-        .C2(C2),
+        //.C2(C2),
         .C3(C3),
-        .C4(C4),
+        //.C4(C4),
         .C5(C5),
         .C6(C6),
     );

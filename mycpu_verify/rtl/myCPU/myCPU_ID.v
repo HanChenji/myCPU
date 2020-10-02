@@ -4,6 +4,7 @@
 
 /*
 
+   ------------------------------------------
    | INSTRUCTION                    | ALUOp |
    ------------------------------------------
    | ADDU, ADDIU, LW, SW, JAL       | 0000  |
@@ -34,23 +35,24 @@
    ------------------------------------------
    | SUB                            | 1101  |
    ------------------------------------------
+
+for the branch instructions:
+
+    C1:
+        01: PC <- PC + signExted(offset||00)
+        10: PC <- PC[31:28]||inst[25:0]||00
+        11: PC <- csCont
+
    ------------------------------------------
+   | insturction                    | C1    |
    ------------------------------------------
+   | BEQ,BNE,BGEZ,BGTZ,BLEZ,BLTZ,   |
+   | BGEZAL,BLTZAL                  | 01    |
    ------------------------------------------
+   | J, JAL                         | 10    |
    ------------------------------------------
+   | JR,JALR                        | 11    |
    ------------------------------------------
-   ------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
 
 
 */
@@ -130,7 +132,6 @@ module myCPU_ID (
 	wire inst_srl   = op==6'b0 && func==6'b000010;
 	wire inst_srav 	= op==6'b0 && func==6'b000111;
 	wire inst_sra 	= op==6'b0 && func==6'b000011;
-    wire inst_jr    = op==6'b0 && func==6'b001000;
     wire inst_ori   = op==6'b001101;
     wire inst_xori  = op==6'b001110;
     wire inst_andi  = op==6'b001100;
@@ -140,51 +141,59 @@ module myCPU_ID (
 	wire inst_addiu = op==6'b001001;
 	wire inst_lw    = op==6'b100011;
 	wire inst_sw    = op==6'b101011;
-	wire inst_beq   = op==6'b000100;
-	wire inst_bne   = op==6'b000101;
-	wire inst_blez  = op==6'b000110;
-	wire inst_bgtz  = op==6'b000111;
     wire inst_lui   = op==6'b001111;
-    wire inst_jal   = op==6'b000011;
 
-	assign C1[0]	= ( inst_beq  & (rsCont == rtCont)  )  |
-                      ( inst_bne  & ~(rsCont == rtCont) )  |
-                      ( inst_blez & (rsCont[31] == 1)   )  | 
-                      ( inst_bgtz & ~(rsCont[31] == 1)  )  |
-                        inst_jr                            ; // 1: jump, 0: don't jump
-    assign C1[1]    = inst_jal | inst_jr;
-    /* C1 == 2'b00 -> no branch
-     * C1 == 2'b01 -> branch a offset
-     * C1 == 2'b10 -> brach unconditionaly @ {PC[31:28],im,2'b00} // JAL
-     * C1 == 2'b11 -> branch @ rtCont // JR
-     */
+    wire inst_beq   = op==6'b000100 && (rsCont==rtCont);
+	wire inst_bne   = op==6'b000101 && ~(rsCont==rtCont);
+	wire inst_bgez  = op==6'b000001 && rt==5'b00001 && ~(rsCont[31]==1);
+	wire inst_bgtz  = op==6'b000111 && rt==5'b00000 && (rsCont[31]==0&&(~(rsCont==0)));
+	wire inst_blez  = op==6'b000110 && rt==5'b00000 && (rsCont==0||rsCont[31]==1);
+    wire inst_bltz  = op==6'b000001 && rt==5'b00000 && rsCont[31]==1;
+    wire inst_bgezal= op==6'b000001 && rt==5'b10001 && (~(rsCont[31]==1));
+    wire inst_bltzal= op==6'b000001 && rt==5'b10000 && rsCont[31]==1;
+    wire inst_j     = op==6'b000010;
+    wire inst_jal   = op==6'b000011;
+    wire inst_jr    = op==6'b000000 && instruction[20:0]=={17{0},4'b1000};
+    wire inst_jalr  = op==6'b000000 && rt==5'b00000 && ra==5'b00000 && func==5'b001001;
+
+    assign C1[0] = inst_beq | inst_bne | inst_bgez | inst_bgtz | inst_blez | inst_bltz | inst_bgezal | inst_bltzal |
+                   inst_jr  | inst_jalr ; 
+    assign C1[1] = inst_j | inst_jal | inst_jr | inst_jalr;
+
 
 	assign C3 		= inst_lw; // 1: mem->reg 0: alu->reg
-	assign C5 		= ~(inst_sw | C1[0]); // reg file wen
+	assign C5 		= ~(inst_sw | inst_beq | inst_bne | inst_bgez | inst_bgtz | inst_blez | inst_bltz | inst_j | inst_jr ); // reg file wen
 	assign C6 		= inst_sw; // mem wen 
 	
 	wire C4 		= inst_xori | inst_ori | inst_andi | inst_sltiu | inst_slti | inst_addi | inst_addiu | inst_lw | inst_lui; // target reg: 1: rt, 0: rd
     wire C2 		= inst_sltiu | inst_slti | inst_addi | inst_addiu | inst_lw | inst_sw;// 1: im-> B; 0: rt->B
     wire C7         = inst_sll | inst_srl | inst_sra; // 1: ra->A 0: rs->A
+
+    wire branchL31 = inst_bgezal | inst_bltzal |  inst_jal ;
+    wire branchLRd = inst_jalr
        
-    assign A = C7       ? unsignExtedRa : 
-               inst_jal ? PC            :
-                          rscont        ;
+    assign A = C7        ? unsignExtedRa : 
+               branchL31 ? PC            :
+               branchLRd ? PC            :
+                           rscont        ;
     assign B = C2        ? signExtedIm :
                inst_lui  ? upperIm     :
-               inst_jal  ? 32'b1000    :
+               branchL31 ? 32'b1000    :
+               branchLRd ? 32'b1000    :
                inst_andi ? zeroExtedIm :
                inst_ori  ? zeroExtedIm :
                inst_xori ? zeroExtedIm :
                            rtcont      ;
 
-    assign targetReg = C4       ? rt       :
-                       inst_jal ? 5'b11111 :
-                                  rd       ;
+    assign targetReg = C4        ? rt       :
+                       branchL31 ? 5'b11111 :
+                     //branchLRd ? rd       :
+                                   rd       ;
     //assign signedImmediate = signExtedIm;
     assign jmpAddr  = C1==2'b01 ? signExtedIm << 2 :
-                      C1==2'b10 ? {PC[31:28],instruction[25:0],2'd0} : // JAL
-                                  rsCont; // JR
+                      C1==2'b10 ? {PC[31:28],instruction[25:0],2'd0} : 
+                      C1==2'b11 ? rsCont :
+                                  {32{0}} ;
 
 	
     assign aluop[0] = inst_subu | inst_sltu | inst_sltiu | inst_or | inst_ori | inst_lui | inst_nor | inst_srav | inst_sra | inst_sub;
