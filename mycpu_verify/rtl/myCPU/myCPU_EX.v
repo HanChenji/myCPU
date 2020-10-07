@@ -5,10 +5,10 @@ module myCPU_EX(
     input[31:0] A,
     input[31:0] B,
     input[3:0]  aluop,
-    input C5,
+    //input C5,
 
     output[31:0] result,
-    output C5I
+    //output C5I
 );
 
     
@@ -26,8 +26,8 @@ module myCPU_EX(
     );
 
     // deal with some exceptions, like overflow errir
-    assign C5I = C5 ? ~overFlow :
-                      0         ;
+    //assign C5I = C5 ? ~overFlow :
+    //                  0         ;
 
 
 endmodule

@@ -54,6 +54,19 @@ for the branch instructions:
    | JR,JALR                        | 11    |
    ------------------------------------------
 
+for the store instructions:    
+
+    C8:     
+        C8[0]==1 <- signExted
+        C8[0]==0 <- zertExted 
+        C8[3:1]:
+                000  ->  Byte
+                001  ->  Half Word 
+                010  ->  Word
+                011  ->  WL
+                100  ->  WR
+        C8[4]: Load?
+        C8[5]: Store?
 
 */
 
@@ -78,6 +91,7 @@ module myCPU_ID (
 	output[4:0] targetReg,
     //output[31:0] signedImmediate,
     output[31:0] jmpAddr,
+    output[31:0] storeCont,
 
     output[3:0] aluop,
     output[1:0] C1,
@@ -85,7 +99,8 @@ module myCPU_ID (
     output C3,
     //output C4,
     output C5,
-    output C6
+    output C6,
+    output[3:0] C8
 );
 
     wire[5:0] op    = instruction[31:26];
@@ -139,12 +154,25 @@ module myCPU_ID (
     wire inst_slti  = op==6'b001010;
 	wire inst_addi  = op==6'b001000;
 	wire inst_addiu = op==6'b001001;
-	wire inst_lw    = op==6'b100011;
-	wire inst_sw    = op==6'b101011;
     wire inst_lui   = op==6'b001111;
 
-    wire inst_beq   = op==6'b000100 && (rsCont==rtCont);
-	wire inst_bne   = op==6'b000101 && ~(rsCont==rtCont);
+    wire inst_lb    = op==6'b100000;
+    wire inst_lbu   = op==6'b100100;
+    wire inst_lh    = op==6'b100001;
+    wire inst_lhu   = op==6'b100101;
+    wire inst_lw    = op==6'b100011;
+    wire inst_lwl   = op==6'b100010;
+    wire inst_lwr   = op==6'b100010;
+
+	wire inst_sb    = op==6'b101000;
+    wire inst_sh    = op==6'b101001;
+	wire inst_sw    = op==6'b101011;
+    wire inst_swl   = op==6'b101010;
+    wire inst_swr   = op==6'b101110;
+    
+    
+    wire inst_beq   = op==6'b000100 && (rscont==rtcont);
+	wire inst_bne   = op==6'b000101 && ~(rscont==rtcont);
 	wire inst_bgez  = op==6'b000001 && rt==5'b00001 && ~(rsCont[31]==1);
 	wire inst_bgtz  = op==6'b000111 && rt==5'b00000 && (rsCont[31]==0&&(~(rsCont==0)));
 	wire inst_blez  = op==6'b000110 && rt==5'b00000 && (rsCont==0||rsCont[31]==1);
@@ -156,17 +184,41 @@ module myCPU_ID (
     wire inst_jr    = op==6'b000000 && instruction[20:0]=={17{0},4'b1000};
     wire inst_jalr  = op==6'b000000 && rt==5'b00000 && ra==5'b00000 && func==5'b001001;
 
+
+
+
+/***********************************************************************/
+
+
+
+    wire CLoad  = inst_lb | inst_lbu | inst_lh | inst_lhu | inst_lw | inst_lwl | inst_lwr ;
+    wire CStore = inst_sb | inst_sh  | inst_sw | inst_swl | inst_swr ; 
+
+    assign C8[0] = inst_lb  | inst_lh  ;
+
+    assign C8[1] = inst_lh  | inst_lhu | 
+                   inst_lwl |          
+                   inst_sh  | inst_swl ; 
+
+    assign C8[2] = inst_lw  | inst_lwl |
+                   inst_sw  | inst_swl ;
+
+    assign C8[3] = inst_lwr | inst_swr ;
+
+    assign C8[4] = CLoad;
+    assign C8[5] = CStore;
+
     assign C1[0] = inst_beq | inst_bne | inst_bgez | inst_bgtz | inst_blez | inst_bltz | inst_bgezal | inst_bltzal |
                    inst_jr  | inst_jalr ; 
     assign C1[1] = inst_j | inst_jal | inst_jr | inst_jalr;
 
 
-	assign C3 		= inst_lw; // 1: mem->reg 0: alu->reg
-	assign C5 		= ~(inst_sw | inst_beq | inst_bne | inst_bgez | inst_bgtz | inst_blez | inst_bltz | inst_j | inst_jr ); // reg file wen
-	assign C6 		= inst_sw; // mem wen 
+	assign C3 		= CLoad; // 1: mem->reg 0: alu->reg
+	assign C5 		= ~(CStore | inst_beq | inst_bne | inst_bgez | inst_bgtz | inst_blez | inst_bltz | inst_j | inst_jr ); // reg file wen
+	assign C6 		= CStore; // mem wen 
 	
-	wire C4 		= inst_xori | inst_ori | inst_andi | inst_sltiu | inst_slti | inst_addi | inst_addiu | inst_lw | inst_lui; // target reg: 1: rt, 0: rd
-    wire C2 		= inst_sltiu | inst_slti | inst_addi | inst_addiu | inst_lw | inst_sw;// 1: im-> B; 0: rt->B
+	wire C4 		= inst_xori | inst_ori | inst_andi | inst_sltiu | inst_slti | inst_addi | inst_addiu | CLoad | inst_lui; // target reg: 1: rt, 0: rd
+    wire C2 		= inst_sltiu | inst_slti | inst_addi | inst_addiu | CLoad | CStore;// 1: im-> B; 0: rt->B
     wire C7         = inst_sll | inst_srl | inst_sra; // 1: ra->A 0: rs->A
 
     wire branchL31 = inst_bgezal | inst_bltzal |  inst_jal ;
@@ -201,6 +253,7 @@ module myCPU_ID (
 	assign aluop[2] = inst_andi | inst_and | inst_or | inst_ori | inst_lui | inst_xor | inst_xori | inst_nor | inst_add | inst_addi | inst_sub;
 	assign aluop[3] = inst_sllv | inst_sll | inst_srlv | inst_srl | inst_srav | inst_sra | inst_add | inst_addi | inst_sub;
 
+    assign storeCont = rtcont;
 
 endmodule
 
