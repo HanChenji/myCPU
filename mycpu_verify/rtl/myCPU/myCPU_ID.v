@@ -187,13 +187,13 @@ module myCPU_ID (
 
     assign targetReg = C4        ? rt       :
                        branchL31 ? 5'b11111 :
-                     //branchLRd ? rd       :
+                       branchLRd ? rd       :
                                    rd       ;
     //assign signedImmediate = signExtedIm;
     assign jmpAddr  = C1==2'b01 ? signExtedIm << 2 :
                       C1==2'b10 ? {PC[31:28],instruction[25:0],2'd0} : 
                       C1==2'b11 ? rsCont :
-                                  {32{0}} ;
+                                  {32{0}};
 
 	
     assign aluop[0] = inst_subu | inst_sltu | inst_sltiu | inst_or | inst_ori | inst_lui | inst_nor | inst_srav | inst_sra | inst_sub;

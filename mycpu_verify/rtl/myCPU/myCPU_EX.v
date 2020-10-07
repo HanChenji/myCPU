@@ -25,6 +25,7 @@ module myCPU_EX(
         .aluResult(result)
     );
 
+    // deal with some exceptions, like overflow errir
     assign C5I = C5 ? ~overFlow :
                       0         ;
 
