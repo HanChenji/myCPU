@@ -102,7 +102,7 @@ module myCPU_top(
         ID2EXE_C5        <= C5;
         //ID2EXE_C6        <= C6;
         ID2EXE_LSMODE    <= lsMode;
-    end
+    end // bypass ? 
 
     wire[31:0] A_ex = ID2EXE_A;
     wire[31:0] B_ex = ID2EXE_B;
@@ -186,8 +186,6 @@ module myCPU_top(
     wire[4:0]  targetReg_wb  = MEM2WB_TARGETREG  ;
 
     wire[31:0] wdata = wsrc ? dataLoaded_wb : aluResult_wb ;
-
-
 
 
 
