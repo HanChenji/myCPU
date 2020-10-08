@@ -87,20 +87,18 @@ module myCPU_ID (
     // output
     output[31:0] A,
     output[31:0] B,
-	//output[4:0] rt,
 	output[4:0] targetReg,
-    //output[31:0] signedImmediate,
     output[31:0] jmpAddr,
     output[31:0] storeCont,
 
     output[3:0] aluop,
     output[1:0] C1,
     //output C2,
-    output C3,
+    //output C3,
     //output C4,
     output C5,
-    output C6,
-    output[3:0] C8
+    //output C6,
+    output[5:0] C8
 );
 
     wire[5:0] op    = instruction[31:26];
@@ -205,17 +203,17 @@ module myCPU_ID (
 
     assign C8[3] = inst_lwr | inst_swr ;
 
-    assign C8[4] = CLoad;
-    assign C8[5] = CStore;
+    assign C8[4] = CStore;
+    assign C8[5] = CLoad;
 
     assign C1[0] = inst_beq | inst_bne | inst_bgez | inst_bgtz | inst_blez | inst_bltz | inst_bgezal | inst_bltzal |
                    inst_jr  | inst_jalr ; 
     assign C1[1] = inst_j | inst_jal | inst_jr | inst_jalr;
 
 
-	assign C3 		= CLoad; // 1: mem->reg 0: alu->reg
+	//assign C3 		= CLoad; // 1: mem->reg 0: alu->reg
 	assign C5 		= ~(CStore | inst_beq | inst_bne | inst_bgez | inst_bgtz | inst_blez | inst_bltz | inst_j | inst_jr ); // reg file wen
-	assign C6 		= CStore; // mem wen 
+	//assign C6 		= CStore; // mem wen 
 	
 	wire C4 		= inst_xori | inst_ori | inst_andi | inst_sltiu | inst_slti | inst_addi | inst_addiu | CLoad | inst_lui; // target reg: 1: rt, 0: rd
     wire C2 		= inst_sltiu | inst_slti | inst_addi | inst_addiu | CLoad | CStore;// 1: im-> B; 0: rt->B
