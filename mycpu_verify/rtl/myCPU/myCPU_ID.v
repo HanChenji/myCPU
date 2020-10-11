@@ -139,22 +139,6 @@ module myCPU_ID (
         .rdata1(rsCont_),
         .rdata2(rtCont_)
     );
-
-   // next codes are for the bypass 
-   wire PAUSE = ( rs==tRegOfMinus1Inst[4:0] && tRegOfMinus1Inst[5] ) || ( rt==tRegOfMinus1Inst && tRegOfMinus1Inst[5] ) ;
-
-   assign rsCont = (PAUSE                                             ) ? {32{0}}     : // stall
-                   (rs==tRegOfMinus1Inst[4:0] && ~tRegOfMinus1Inst[5] ) ? ex2mem_cont :
-                   (rs==tRegOfMinus2Inst[4:0]                         ) ? mem2wb_cont :
-                   (rs==tRegOfMinus3Inst[4:0]                         ) ? wb_cont     :
-                                                                          rsCont_     ;
-
-   assign rtCont = (PAUSE                                             ) ? {32{0}}     : // stall
-                   (rt==tRegOfMinus1Inst[4:0] && ~tRegOfMinus1Inst[5] ) ? ex2mem_cont :
-                   (rt==tRegOfMinus2Inst[4:0]                         ) ? mem2wb_cont :
-                   (rt==tRegOfMinus3Inst[4:0]                         ) ? wb_cont     :
-                                                                          rtCont_     ;
-
     wire inst_addu  = op==6'b0 && func==6'b100001;
     wire inst_add   = op==6'b0 && func==6'b100000;
     wire inst_subu  = op==6'b0 && func==6'b100011;
@@ -195,18 +179,47 @@ module myCPU_ID (
     wire inst_swr   = op==6'b101110;
     
     
-    wire inst_beq   = op==6'b000100 && (rsCont==rtCont);
-    wire inst_bne   = op==6'b000101 && ~(rsCont==rtCont);
-    wire inst_bgez  = op==6'b000001 && rt==5'b00001 && ~(rsCont[31]==1);
-    wire inst_bgtz  = op==6'b000111 && rt==5'b00000 && (rsCont[31]==0&&(~(rsCont==0)));
-    wire inst_blez  = op==6'b000110 && rt==5'b00000 && (rsCont==0||rsCont[31]==1);
-    wire inst_bltz  = op==6'b000001 && rt==5'b00000 && rsCont[31]==1;
-    wire inst_bgezal= op==6'b000001 && rt==5'b10001 && (~(rsCont[31]==1));
-    wire inst_bltzal= op==6'b000001 && rt==5'b10000 && rsCont[31]==1;
+    wire inst_beq_    = op==6'b000100 ;
+    wire inst_bne_    = op==6'b000101 ;
+    wire inst_bgez_   = op==6'b000001 && rt==5'b00001 ;
+    wire inst_bgtz_   = op==6'b000111 && rt==5'b00000 ;
+    wire inst_blez_   = op==6'b000110 && rt==5'b00000 ;
+    wire inst_bltz_   = op==6'b000001 && rt==5'b00000 ;
+    wire inst_bgezal_ = op==6'b000001 && rt==5'b10001 ;
+    wire inst_bltzal_ = op==6'b000001 && rt==5'b10000 ;
+
     wire inst_j     = op==6'b000010;
     wire inst_jal   = op==6'b000011;
     wire inst_jr    = op==6'b000000 && instruction[20:0]=={17{0},4'b1000};
     wire inst_jalr  = op==6'b000000 && rt==5'b00000 && ra==5'b00000 && func==5'b001001;
+
+
+    wire rsValid = ~(inst_lui||inst_all||inst_sra||inst_srl||inst_j||inst_jal);
+    wire rtValid = ~(inst_addi||inst_addiu||inst_slti||inst_sltiu||inst_andi||inst_lui||inst_ori||inst_xori||inst_bgez_||inst_bgtz_||inst_blez_||inst_bltz_||inst_bgezal_||inst_bltzal_||inst_j||inst_jal||inst_jr||inst_jalr||inst_lb||inst_lbu||inst_lh||inst_lhu||inst_lw||inst_lwl||inst_lwr);
+
+   // next codes are for the bypass 
+   wire PAUSE = ( rs==tRegOfMinus1Inst[4:0]   && rsValid && tRegOfMinus1Inst[5] ) || ( rt==tRegOfMinus1Inst[4:0] && rtValid && tRegOfMinus1Inst[5] ) ;
+
+   assign rsCont = (PAUSE                                                        ) ? {32{0}}     : // stall
+                   (rs==tRegOfMinus1Inst[4:0] && rsValid && ~tRegOfMinus1Inst[5] ) ? ex2mem_cont :
+                   (rs==tRegOfMinus2Inst[4:0] && rsValid                         ) ? mem2wb_cont :
+                   (rs==tRegOfMinus3Inst[4:0] && rsValid                         ) ? wb_cont     :
+                                                                                     rsCont_     ;
+
+   assign rtCont = (PAUSE                                                        ) ? {32{0}}     : // stall
+                   (rt==tRegOfMinus1Inst[4:0] && rtValid && ~tRegOfMinus1Inst[5] ) ? ex2mem_cont :
+                   (rt==tRegOfMinus2Inst[4:0] && rtValid                         ) ? mem2wb_cont :
+                   (rt==tRegOfMinus3Inst[4:0] && rtValid                         ) ? wb_cont     :
+                                                                                     rtCont_     ;
+ 
+    wire inst_beq    = inst_beq_    && (rsCont==rtCont);
+    wire inst_bne    = inst_bne_    && ~(rsCont==rtCont);
+    wire inst_bgez   = inst_bgez_   && ~(rsCont[31]==1);
+    wire inst_bgtz   = inst_bgtz_   && (rsCont[31]==0&&(~(rsCont==0)));
+    wire inst_blez   = inst_blez_   && (rsCont==0||rsCont[31]==1);
+    wire inst_bltz   = inst_bltz_   && rsCont[31]==1;
+    wire inst_bgezal = inst_bgezal_ && (~(rsCont[31]==1));
+    wire inst_bltzal = inst_bltzal_ && rsCont[31]==1;
 
 
 
