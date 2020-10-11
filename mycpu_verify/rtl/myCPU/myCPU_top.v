@@ -32,7 +32,7 @@ module myCPU_top(
         .rst(resetn),
         .offset(jmpAddr),
         .jen(C1),
-        .allowIN(),
+        .allowIN(allowIN),
         // output
         .inst_sram_en(inst_sram_en),
         .inst_sram_addr(PC),
@@ -52,7 +52,8 @@ module myCPU_top(
     wire[1:0] C1;
     wire C3, C5, C6;
     wire[5:0] lsMode;
-   
+    wire allowIN;
+  
     myCPU_ID ID_module(
         // input
         .clk(clk),
@@ -61,25 +62,50 @@ module myCPU_top(
         .instruction(inst_sram_rdata),
 
         .wen(C5_wb),
-        .wdata(wdata),
+        .wdata(writeBackData_wb),
         .waddr(targetReg_wb),
+
+        .tRegOfMinus1Inst(tRegOfMinus1Inst),
+        .tRegOfMinus2Inst(tRegOfMinus2Inst),
+        .tRegOfMinus3Inst(tRegOfMinus3Inst),
+   
+        .ex2mem_cont(result_ex),
+        .mem2wb_cont(writeBackData),
+        .wb_cont(writeBackData_wb),
 
         // output
         .A(A),
         .B(B),
-        .targetReg(targetReg),
+        .targetReg_(targetReg),
         .jmpAddr(jmpAddr),
         .storeCont(storeCont),
 
         .aluop(aluop),
-        .C1(C1),
+        .C1_(C1),
         //.C2(C2),
         //.C3(C3),
         //.C4(C4),
-        .C5(C5),
+        .C5_(C5),
         //.C6(C6),
-        .C8(lsMode),
+        .C8_(lsMode),
+        .allowIN(allowIN)
     );
+ 
+    wire[4:0] tRegOfMinus1Inst;
+    wire[4:0] tRegOfMinus2Inst;
+    wire[4:0] tRegOfMinus3Inst;
+    
+    myCPU_board board(
+        // input
+        .clk(clk),
+        .rst(resetn),
+        .targetReg(targetReg),
+        // output
+        .tRegOfMinus1Inst(tRegOfMinus1Inst),
+        .tRegOfMinus2Inst(tRegOfMinus2Inst),
+        .tRegOfMinus3Inst(tRegOfMinus3Inst)
+    );
+
 
 
     // ID/EXE pipeline register 
@@ -148,7 +174,7 @@ module myCPU_top(
     wire[31:0]  aluResult_mem = EXE2MEM_ALURESULT;
     wire[31:0]  dataLoaded;
 
-    assign data_sram_en = lsMode[5] || lsMode[4] ;
+    assign data_sram_en = lsMode_mem[5] || lsMode_mem[4] ;
     assign data_sram_addr = aluResult_mem;
 
     myCPU_MEM MEM_module (
@@ -163,29 +189,24 @@ module myCPU_top(
         .dataLoaded(dataLoaded)
     );
 
+    wire[31:0] writeBackData = lsMode_mem[5] ? dataLoaded : aluResult_mem ;
 
     // MEM/WB pipeline register 
-    reg       MEM2WB_C5, MEM2WB_WSRC;
-    reg[31:0] MEM2WB_DATALOADED;
-    reg[31:0] MEM2WB_ALURESULT;
+    reg       MEM2WB_C5;
+    reg[31:0] MEM2WB_WRITEBACKDATA;
     reg[4:0]  MEM2WB_TARGETREG;
 
     always @(posedge clk)
     begin
-        MEM2WB_C5          <=  C5_mem;
-        MEM2WB_WSRC        <=  lsMode_mem[5];
-        MEM2WB_DATALOADED  <=  dataLoaded;
-        MEM2WB_ALURESULT   <=  aluResult_mem;
-        MEM2WB_TARGETREG   <=  targetReg_mem;
+        MEM2WB_C5            <=  C5_mem;
+        MEM2WB_WRITEBACKDATA <=  writeBackData;
+        MEM2WB_TARGETREG     <=  targetReg_mem;
     end
 
     wire C5_wb = MEM2WB_C5 ;
-    wire wsrc  = MEM2WB_WSRC;
-    wire[31:0] dataLoaded_wb = MEM2WB_DATALOADED ;
-    wire[31:0] aluResult_wb  = MEM2WB_ALURESULT  ; 
+    wire[31:0] writeBackData_wb = MEM2WB_WRITEBACKDATA ;
     wire[4:0]  targetReg_wb  = MEM2WB_TARGETREG  ;
 
-    wire[31:0] wdata = wsrc ? dataLoaded_wb : aluResult_wb ;
 
 
 

@@ -31,16 +31,26 @@ module myCPU_IF (
         if(rst)
         begin
             PC <= 0xbfc00000;
-            instRequest <= 1'b0;
-        end
-        else if(allowIN)
             instRequest <= 1'b1;
-            if(jen==2'b01) // NPC = PC + 4 + offset ? why +4 ?
-                PC <= PC + offset;
-            else if (jen==2'b10||jen==2'b11)
-                PC <= offset;
-            else // NPC = PC +4
-                PC <= PC + 4;
+        end
+        else 
+        begin 
+            if(allowIN)
+            begin
+                instRequest <= 1'b1;
+                if(jen==2'b01) // NPC = PC + 4 + offset ? why +4 ?
+                    PC <= PC + offset;
+                else if (jen==2'b10||jen==2'b11)
+                    PC <= offset;
+                else // NPC = PC +4
+                    PC <= PC + 4;
+            end
+            else
+            begin
+                instRequest <= 1'b0;
+                PC <= PC;
+            end
+        end
     end
 
     assign inst_sram_en = instRequest;
