@@ -65,8 +65,8 @@ for the store instructions:
                 010  ->  Word
                 011  ->  WL
                 100  ->  WR
-        C8[4]: Load?
-        C8[5]: Store?
+        C8[4]: Store?
+        C8[5]: Load?
 
 */
 
@@ -84,9 +84,9 @@ module myCPU_ID (
     input[31:0] wdata,
     input[4:0] waddr,
 
-    input[4:0] tRegOfMinus1Inst,
-    input[4:0] tRegOfMinus2Inst,
-    input[4:0] tRegOfMinus3Inst,
+    input[5:0] tRegOfMinus1Inst,
+    input[5:0] tRegOfMinus2Inst,
+    input[5:0] tRegOfMinus3Inst,
 
     input[31:0] ex2mem_cont,
     input[31:0] mem2wb_cont,
@@ -141,20 +141,20 @@ module myCPU_ID (
     );
 
    // next codes are for the bypass 
-   wire PAUSE = ( rs==tRegOfMinus1Inst && CLoad ) || ( rt==tRegOfMinus1Inst && CLoad ) ;
+   wire PAUSE = ( rs==tRegOfMinus1Inst[4:0] && tRegOfMinus1Inst[5] ) || ( rt==tRegOfMinus1Inst && tRegOfMinus1Inst[5] ) ;
 
-   assign rsCont = (PAUSE                          ) ? {32{0}}     : // stall
-                   (rs==tRegOfMinus1Inst && ~CLoad ) ? ex2mem_cont :
-                   (rs==tRegOfMinus2Inst           ) ? mem2wb_cont :
-                   (rs==tRegOfMinus3Inst           ) ? wb_cont     :
-                                                       rsCont_     ;
- 
-   assign rtCont = (PAUSE                          ) ? {32{0}}     : // stall
-                   (rt==tRegOfMinus1Inst && ~CLoad ) ? ex2mem_cont :
-                   (rt==tRegOfMinus2Inst           ) ? mem2wb_cont :
-                   (rt==tRegOfMinus3Inst           ) ? wb_cont     :
-                                                       rtCont_     ;
- 
+   assign rsCont = (PAUSE                                             ) ? {32{0}}     : // stall
+                   (rs==tRegOfMinus1Inst[4:0] && ~tRegOfMinus1Inst[5] ) ? ex2mem_cont :
+                   (rs==tRegOfMinus2Inst[4:0]                         ) ? mem2wb_cont :
+                   (rs==tRegOfMinus3Inst[4:0]                         ) ? wb_cont     :
+                                                                          rsCont_     ;
+
+   assign rtCont = (PAUSE                                             ) ? {32{0}}     : // stall
+                   (rt==tRegOfMinus1Inst[4:0] && ~tRegOfMinus1Inst[5] ) ? ex2mem_cont :
+                   (rt==tRegOfMinus2Inst[4:0]                         ) ? mem2wb_cont :
+                   (rt==tRegOfMinus3Inst[4:0]                         ) ? wb_cont     :
+                                                                          rtCont_     ;
+
     wire inst_addu  = op==6'b0 && func==6'b100001;
     wire inst_add   = op==6'b0 && func==6'b100000;
     wire inst_subu  = op==6'b0 && func==6'b100011;
@@ -207,7 +207,6 @@ module myCPU_ID (
     wire inst_jal   = op==6'b000011;
     wire inst_jr    = op==6'b000000 && instruction[20:0]=={17{0},4'b1000};
     wire inst_jalr  = op==6'b000000 && rt==5'b00000 && ra==5'b00000 && func==5'b001001;
-
 
 
 

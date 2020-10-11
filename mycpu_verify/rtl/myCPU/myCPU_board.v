@@ -4,28 +4,28 @@ module myCPU_board (
     wire clk,
     wire rst,
     wire[4:0] targetReg,
-
+    wire instType,
     //output
-    wire[4:0] tRegOfMinus1Inst,
-    wire[4:0] tRegOfMinus2Inst,
-    wire[4:0] tRegOfMinus3Inst,
+    wire[5:0] tRegOfMinus1Inst,
+    wire[5:0] tRegOfMinus2Inst,
+    wire[5:0] tRegOfMinus3Inst,
 
 );
 
-    reg[4:0] regOfMinus1Inst;
-    reg[4:0] regOfMinus2Inst;
-    reg[4:0] regOfMinus3Inst;
+    reg[5:0] regOfMinus1Inst;
+    reg[5:0] regOfMinus2Inst;
+    reg[5:0] regOfMinus3Inst;
 
     always @(posedge clk, posedge rst)
     begin
         if(rst)
         begin
-            regOfMinus1Inst <= 5'b00000;
-            regOfMinus2Inst <= 5'b00000;
-            regOfMinus3Inst <= 5'b00000;
+            regOfMinus1Inst <= 6'b00000;
+            regOfMinus2Inst <= 6'b00000;
+            regOfMinus3Inst <= 6'b00000;
         else
         begin
-            regOfMinus1Inst <= targetReg; 
+            regOfMinus1Inst <= {instType,targetReg}; 
             regOfMinus2Inst <= regOfMinus1Inst;
             regOfMinus3Inst <= regOfMinus2Inst;
         end

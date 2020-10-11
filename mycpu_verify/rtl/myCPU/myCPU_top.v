@@ -91,15 +91,16 @@ module myCPU_top(
         .allowIN(allowIN)
     );
  
-    wire[4:0] tRegOfMinus1Inst;
-    wire[4:0] tRegOfMinus2Inst;
-    wire[4:0] tRegOfMinus3Inst;
+    wire[5:0] tRegOfMinus1Inst;
+    wire[5:0] tRegOfMinus2Inst;
+    wire[5:0] tRegOfMinus3Inst;
     
     myCPU_board board(
         // input
         .clk(clk),
         .rst(resetn),
         .targetReg(targetReg),
+        .instType(lsMode[5]),
         // output
         .tRegOfMinus1Inst(tRegOfMinus1Inst),
         .tRegOfMinus2Inst(tRegOfMinus2Inst),
