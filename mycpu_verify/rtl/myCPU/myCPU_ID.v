@@ -58,7 +58,7 @@ for the store instructions:
 
     C8:     
         C8[0]==1 <- signExted
-        C8[0]==0 <- zertExted 
+        C8[0]==0 <- zeroExted 
         C8[3:1]:
                 000  ->  Byte
                 001  ->  Half Word 
@@ -139,6 +139,7 @@ module myCPU_ID (
         .rdata1(rsCont_),
         .rdata2(rtCont_)
     );
+
     wire inst_addu  = op==6'b0 && func==6'b100001;
     wire inst_add   = op==6'b0 && func==6'b100000;
     wire inst_subu  = op==6'b0 && func==6'b100011;
@@ -153,8 +154,8 @@ module myCPU_ID (
     wire inst_sll   = op==6'b0 && func==6'b000000;
     wire inst_srlv  = op==6'b0 && func==6'b000110;
     wire inst_srl   = op==6'b0 && func==6'b000010;
-    wire inst_srav     = op==6'b0 && func==6'b000111;
-    wire inst_sra     = op==6'b0 && func==6'b000011;
+    wire inst_srav  = op==6'b0 && func==6'b000111;
+    wire inst_sra   = op==6'b0 && func==6'b000011;
     wire inst_ori   = op==6'b001101;
     wire inst_xori  = op==6'b001110;
     wire inst_andi  = op==6'b001100;

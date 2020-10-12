@@ -48,7 +48,6 @@ module myCPU_IF (
             else
             begin
                 instRequest <= 1'b0;
-                PC <= PC;
             end
         end
     end
