@@ -84,9 +84,9 @@ module myCPU_ID (
     input[31:0] wdata,
     input[4:0] waddr,
 
-    input[5:0] tRegOfMinus1Inst,
-    input[5:0] tRegOfMinus2Inst,
-    input[5:0] tRegOfMinus3Inst,
+    input[5:0] targetRegOfMinus1Inst,
+    input[5:0] targetRegOfMinus2Inst,
+    input[5:0] targetRegOfMinus3Inst,
 
     input[31:0] ex2mem_cont,
     input[31:0] mem2wb_cont,
@@ -199,19 +199,19 @@ module myCPU_ID (
     wire rtValid = ~(inst_addi||inst_addiu||inst_slti||inst_sltiu||inst_andi||inst_lui||inst_ori||inst_xori||inst_bgez_||inst_bgtz_||inst_blez_||inst_bltz_||inst_bgezal_||inst_bltzal_||inst_j||inst_jal||inst_jr||inst_jalr||inst_lb||inst_lbu||inst_lh||inst_lhu||inst_lw||inst_lwl||inst_lwr);
 
    // next codes are for the bypass 
-   wire PAUSE = ( rs==tRegOfMinus1Inst[4:0]   && rsValid && tRegOfMinus1Inst[5] ) || ( rt==tRegOfMinus1Inst[4:0] && rtValid && tRegOfMinus1Inst[5] ) ;
+   wire PAUSE = ( rs==targetRegOfMinus1Inst[4:0]   && rsValid && targetRegOfMinus1Inst[5] ) || ( rt==targetRegOfMinus1Inst[4:0] && rtValid && targetRegOfMinus1Inst[5] ) ;
 
-   assign rsCont = (PAUSE                                                        ) ? {32{0}}     : // stall
-                   (rs==tRegOfMinus1Inst[4:0] && rsValid && ~tRegOfMinus1Inst[5] ) ? ex2mem_cont :
-                   (rs==tRegOfMinus2Inst[4:0] && rsValid                         ) ? mem2wb_cont :
-                   (rs==tRegOfMinus3Inst[4:0] && rsValid                         ) ? wb_cont     :
-                                                                                     rsCont_     ;
+   assign rsCont = (PAUSE                                                                  ) ? {32{0}}     : // stall
+                   (rs==targetRegOfMinus1Inst[4:0] && rsValid && ~targetRegOfMinus1Inst[5] ) ? ex2mem_cont :
+                   (rs==targetRegOfMinus2Inst[4:0] && rsValid                              ) ? mem2wb_cont :
+                   (rs==targetRegOfMinus3Inst[4:0] && rsValid                              ) ? wb_cont     :
+                                                                                              rsCont_     ;
 
-   assign rtCont = (PAUSE                                                        ) ? {32{0}}     : // stall
-                   (rt==tRegOfMinus1Inst[4:0] && rtValid && ~tRegOfMinus1Inst[5] ) ? ex2mem_cont :
-                   (rt==tRegOfMinus2Inst[4:0] && rtValid                         ) ? mem2wb_cont :
-                   (rt==tRegOfMinus3Inst[4:0] && rtValid                         ) ? wb_cont     :
-                                                                                     rtCont_     ;
+   assign rtCont = (PAUSE                                                                  ) ? {32{0}}     : // stall
+                   (rt==targetRegOfMinus1Inst[4:0] && rtValid && ~targetRegOfMinus1Inst[5] ) ? ex2mem_cont :
+                   (rt==targetRegOfMinus2Inst[4:0] && rtValid                              ) ? mem2wb_cont :
+                   (rt==targetRegOfMinus3Inst[4:0] && rtValid                              ) ? wb_cont     :
+                                                                                               rtCont_     ;
  
     wire inst_beq    = inst_beq_    && (rsCont==rtCont);
     wire inst_bne    = inst_bne_    && ~(rsCont==rtCont);
@@ -306,7 +306,7 @@ module myCPU_ID (
 
 endmodule
 
-
+// by Anlan
 
 
 

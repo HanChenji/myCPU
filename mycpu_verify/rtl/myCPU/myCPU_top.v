@@ -65,10 +65,10 @@ module myCPU_top(
         .wdata(writeBackData_wb),
         .waddr(targetReg_wb),
 
-        .tRegOfMinus1Inst(tRegOfMinus1Inst),
-        .tRegOfMinus2Inst(tRegOfMinus2Inst),
-        .tRegOfMinus3Inst(tRegOfMinus3Inst),
-   
+        .targetRegOfMinus1Inst({{lsMode_ex[5]} , targetReg_ex  }   ),
+        .targetRegOfMinus2Inst({{lsMode_mem[5]}, targetReg_mem }   ),
+        .targetRegOfMinus3Inst({{lsMode_wb5}   , targetReg_wb  }   ),
+
         .ex2mem_cont(result_ex),
         .mem2wb_cont(writeBackData),
         .wb_cont(writeBackData_wb),
@@ -91,54 +91,45 @@ module myCPU_top(
         .allowIN(allowIN)
     );
  
-    wire[5:0] tRegOfMinus1Inst;
-    wire[5:0] tRegOfMinus2Inst;
-    wire[5:0] tRegOfMinus3Inst;
-    
-    myCPU_board board(
-        // input
-        .clk(clk),
-        .rst(resetn),
-        .targetReg(targetReg),
-        .instType(lsMode[5]),
-        // output
-        .tRegOfMinus1Inst(tRegOfMinus1Inst),
-        .tRegOfMinus2Inst(tRegOfMinus2Inst),
-        .tRegOfMinus3Inst(tRegOfMinus3Inst)
-    );
-
-
-
     // ID/EXE pipeline register 
-    reg[31:0] ID2EXE_A, ID2EXE_B;
-    reg[4:0] ID2EXE_TARGETREG;
-    reg[31:0] ID2EXE_STORECONT;
-    reg[3:0] ID2EXE_ALUOP;
-    //reg ID2EXE_C3, ID2EXE_C5; // ID2EXE_C6;
-    reg ID2EXE_C5; // ID2EXE_C6;
-    reg[5:0] ID2EXE_LSMODE;
+    reg[31:0] ID2EXE_A, ID2EXE_B ;
+    reg[4:0] ID2EXE_TARGETREG    ;
+    reg[31:0] ID2EXE_STORECONT   ;
+    reg[3:0] ID2EXE_ALUOP        ;
+    reg ID2EXE_C5                ; 
+    reg[5:0] ID2EXE_LSMODE       ;
 
-    always @(posedge clk)
+    always @(posedge clk,posedge resetn)
     begin
-        ID2EXE_A         <= A;
-        ID2EXE_B         <= B;
-        ID2EXE_TARGETREG <= targetReg;
-        ID2EXE_STORECONT <= storeCont;
-        ID2EXE_ALUOP     <= aluop;
-        //ID2EXE_C3        <= C3;
-        ID2EXE_C5        <= C5;
-        //ID2EXE_C6        <= C6;
-        ID2EXE_LSMODE    <= lsMode;
-    end // bypass ? 
+        if(resetn)
+        begin
+            ID2EXE_A         <= {32{0}}   ;
+            ID2EXE_B         <= {32{0}}   ;
+            ID2EXE_TARGETREG <= {5 {0}}   ;
+            ID2EXE_STORECONT <= {32{0}}   ;
+            ID2EXE_ALUOP     <= {4 {0}}   ;
+            ID2EXE_C5        <= 0         ;
+            ID2EXE_LSMODE    <= {6 {0}}   ;
+        end
+        else
+        begin
+            ID2EXE_A         <= A;
+            ID2EXE_B         <= B;
+            ID2EXE_TARGETREG <= targetReg;
+            ID2EXE_STORECONT <= storeCont;
+            ID2EXE_ALUOP     <= aluop;
+            ID2EXE_C5        <= C5;
+            ID2EXE_LSMODE    <= lsMode;
+        end
+    end  
 
-    wire[31:0] A_ex = ID2EXE_A;
-    wire[31:0] B_ex = ID2EXE_B;
-    wire[4:0]  targetReg_ex = ID2EXE_TARGETREG;
-    wire[31:0] sotreCont_ex = ID2EXE_STORECONT;
-    wire[3:0]  aluop_ex = ID2EXE_ALUOP;
-    wire       C5_ex = ID2EXE_C5;
-    wire[5:0]  lsMode_ex = ID2EXE_LSMODE;
-
+    wire[31:0] A_ex = ID2EXE_A                  ;
+    wire[31:0] B_ex = ID2EXE_B                  ;
+    wire[4:0]  targetReg_ex = ID2EXE_TARGETREG  ;
+    wire[31:0] sotreCont_ex = ID2EXE_STORECONT  ;
+    wire[3:0]  aluop_ex = ID2EXE_ALUOP          ;
+    wire       C5_ex = ID2EXE_C5                ;
+    wire[5:0]  lsMode_ex = ID2EXE_LSMODE        ;
     wire[31:0] result_ex;
 
     myCPU_EX EX_module(
@@ -152,58 +143,81 @@ module myCPU_top(
 
 
     // EXE/MEM pipeline register 
-    reg[4:0]  EXE2MEM_TARGETREG;
-    reg[31:0] EXE2MEM_STORECONT;
-    reg       EXE2MEM_C5;
-    reg[5:0]  EXE2MEM_LSMODE;
-    reg[31:0] EXE2MEM_ALURESULT;
+    reg[4:0]  EXE2MEM_TARGETREG ;
+    reg[31:0] EXE2MEM_STORECONT ;
+    reg       EXE2MEM_C5        ;
+    reg[5:0]  EXE2MEM_LSMODE    ;
+    reg[31:0] EXE2MEM_ALURESULT ;
     
-    always @(posedge clk)
+    always @(posedge clk,posedge resetn)
     begin
-        EXE2MEM_TARGETREG   <=  targetReg_ex  ;
-        EXE2MEM_STORECONT   <=  sotreCont_ex  ;
-        EXE2MEM_C5          <=  C5_ex         ;
-        EXE2MEM_LSMODE      <=  lsMode_ex     ;
-        EXE2MEM_ALURESULT   <=  result_ex     ;
+        if(resetn)
+        begin
+            EXE2MEM_TARGETREG   <=  {5 {0}}  ;
+            EXE2MEM_STORECONT   <=  {32{0}}  ;
+            EXE2MEM_C5          <=  {1 {0}}  ;
+            EXE2MEM_LSMODE      <=  {6 {0}}  ;
+            EXE2MEM_ALURESULT   <=  { {0}}   ;
+        end
+        else
+        begin
+            EXE2MEM_TARGETREG   <=  targetReg_ex  ;
+            EXE2MEM_STORECONT   <=  sotreCont_ex  ;
+            EXE2MEM_C5          <=  C5_ex         ;
+            EXE2MEM_LSMODE      <=  lsMode_ex     ;
+            EXE2MEM_ALURESULT   <=  result_ex     ;
+        end
     end
 
 
-    wire[4:0]   targetReg_mem = EXE2MEM_TARGETREG;
-    wire[31:0]  storeCont_mem = EXE2MEM_STORECONT;
-    wire        C5_mem        = EXE2MEM_C5;
-    wire[5:0]   lsMode_mem    = EXE2MEM_LSMODE;
-    wire[31:0]  aluResult_mem = EXE2MEM_ALURESULT;
-    wire[31:0]  dataLoaded;
+    wire[4:0]   targetReg_mem = EXE2MEM_TARGETREG ;
+    wire[31:0]  storeCont_mem = EXE2MEM_STORECONT ;
+    wire        C5_mem        = EXE2MEM_C5        ;
+    wire[5:0]   lsMode_mem    = EXE2MEM_LSMODE    ;
+    wire[31:0]  aluResult_mem = EXE2MEM_ALURESULT ;
+    wire[31:0]  writeBackData;
 
     assign data_sram_en = lsMode_mem[5] || lsMode_mem[4] ;
     assign data_sram_addr = aluResult_mem;
 
     myCPU_MEM MEM_module (
         // input 
-        .Mode(lsMode_mem[4:0]),
+        .aluResult_mem(aluResult_mem),
+        .Mode(lsMode_mem),
         .data_sram_rdata(data_sram_rdata),
         .wCont(storeCont_mem),
 
         // output 
         .data_sram_wen(data_sram_wen),
         .data_sram_wdata(data_sram_wdata),
-        .dataLoaded(dataLoaded)
+        .writeBackData(writeBackData)
     );
 
-    wire[31:0] writeBackData = lsMode_mem[5] ? dataLoaded : aluResult_mem ;
-
     // MEM/WB pipeline register 
+    reg       MEM2WB_LSMODE5;
     reg       MEM2WB_C5;
     reg[31:0] MEM2WB_WRITEBACKDATA;
     reg[4:0]  MEM2WB_TARGETREG;
 
-    always @(posedge clk)
+    always @(posedge clk,posedge resetn)
     begin
-        MEM2WB_C5            <=  C5_mem;
-        MEM2WB_WRITEBACKDATA <=  writeBackData;
-        MEM2WB_TARGETREG     <=  targetReg_mem;
+        if(resetn)
+        begin
+            MEM2WB_LSMODE5       <=  {1 {0}}; 
+            MEM2WB_C5            <=  {1 {0}};
+            MEM2WB_WRITEBACKDATA <=  {31{0}};
+            MEM2WB_TARGETREG     <=  {5 {0}};
+        end
+        else
+        begin
+            MEM2WB_LSMODE5       <=  lsMode_mem[5]; 
+            MEM2WB_C5            <=  C5_mem;
+            MEM2WB_WRITEBACKDATA <=  writeBackData;
+            MEM2WB_TARGETREG     <=  targetReg_mem;
+        end
     end
 
+    wire lsMode_wb5 = MEM2WB_LSMODE5 ;
     wire C5_wb = MEM2WB_C5 ;
     wire[31:0] writeBackData_wb = MEM2WB_WRITEBACKDATA ;
     wire[4:0]  targetReg_wb  = MEM2WB_TARGETREG  ;
@@ -212,13 +226,9 @@ module myCPU_top(
 
 
 
-
-
 endmodule
 
-
-
-
+// by Anlan
 
 
 

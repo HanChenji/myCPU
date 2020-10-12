@@ -58,12 +58,7 @@ module myCPU_IF (
 endmodule
 
 
-
-
-
-
-
-
+// by Anlan
 
 
 
