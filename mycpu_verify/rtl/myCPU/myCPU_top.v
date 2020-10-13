@@ -61,7 +61,7 @@ module myCPU_top(
         .PC(PC),
         .instruction(inst_sram_rdata),
 
-        .wen(rfWen),
+        .wen(C5_wb),
         .wdata(writeBackData),
         .waddr(targetReg_wb),
 
@@ -82,11 +82,7 @@ module myCPU_top(
 
         .aluop(aluop),
         .C1_(C1),
-        //.C2(C2),
-        //.C3(C3),
-        //.C4(C4),
         .C5_(C5),
-        //.C6(C6),
         .C8_(lsMode),
         .allowIN(allowIN)
     );
@@ -183,25 +179,28 @@ module myCPU_top(
     wire        C5_mem        = EXE2MEM_C5        ;
     wire[5:0]   lsMode_mem    = EXE2MEM_LSMODE    ;
     wire[31:0]  aluResult_mem = EXE2MEM_ALURESULT ;
+    wire[31:0]  data2write                        ;
+    wire[3:0]   memWen                            ;
 
     assign data_sram_en = lsMode_mem[5] || lsMode_mem[4] ;
     assign data_sram_addr = aluResult_mem;
-    assign data_sram_wdata = storeCont_mem;
 
     myCPU_MEM MEM_module (
         // input 
-       // .aluResult_mem(aluResult_mem),
         .Mode(lsMode_mem),
-      //  .data_sram_rdata(data_sram_rdata),
-      //  .wCont(storeCont_mem),
+        .addrLow2Bit(aluResult_mem[1:0]),
+        .storeCont(storeCont_mem),
 
         // output 
-        .data_sram_wen(data_sram_wen),
-       // .data_sram_wdata(data_sram_wdata),
-     //   .writeBackData(writeBackData)
+        .memWen(memWen),
+        .data2write(data2write)
     );
+    
+    assign data_sram_wdata = data2write;
+    assign data_sram_wen   = memWen    ;
 
     // MEM/WB pipeline register 
+    reg[31:0] MEM2WB_RTCONT   ;
     reg[31:0] MEM2WB_ALURESULT;
     reg[31:0] MEM2WB_PC;
     reg[5:0]  MEM2WB_LSMODE;
@@ -213,6 +212,7 @@ module myCPU_top(
     begin
         if(resetn)
         begin
+            MEM2WB_RTCONT        <=  {32{0}};
             MEM2WB_ALURESULT     <=  {32{0}};
             MEM2WB_PC            <=  {32{0}};
             MEM2WB_LSMODE        <=  {6 {0}}; 
@@ -221,6 +221,7 @@ module myCPU_top(
         end
         else
         begin
+            MEM2WB_RTCONT        <=  storeCont_mem;
             MEM2WB_ALURESULT     <=  aluResult_mem;
             MEM2WB_PC            <=  PC_mem;
             MEM2WB_LSMODE        <=  lsMode_mem; 
@@ -234,23 +235,22 @@ module myCPU_top(
     wire C5_wb = MEM2WB_C5 ;
     wire[4:0]  targetReg_wb  = MEM2WB_TARGETREG  ;
     wire[31:0] aluResult_wb = MEM2WB_ALURESULT ;
+    wire[31:0] rtCont_wb = MEM2WB_RTCONT ;
     wire[31:0] writeBackData ;
-    wire[3:0] rfWen ;
 
     myCPU_WB WB_module (
         // input 
+        .rtCont(rtCont_wb),
         .aluResult(aluResult_wb),
         .data_sram_rdata(data_sram_rdata),
         .LodeMode(lsMode_wb),
-        .C5(C5_wb),
         //output
         .writeBackData(writeBackData),
-        .rfWen(rfWen)
     );
 
     assign debug_wb_pc = PC_wb ;
     assign debug_wb_rf_wdata = writeBackData ;
-    assign debug_wb_rf_wen = rfWen ;
+    assign debug_wb_rf_wen = {4{C5_wb}} ;
     assign debug_wb_rf_wnum = targetReg_wb ;
 
 

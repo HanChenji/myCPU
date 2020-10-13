@@ -7,7 +7,7 @@ module myCPU_regFile(
     input clk,
     input rst,
     
-    input wen[3:0],
+    input wen,
     input [`ADDR_WIDTH - 1:0] waddr,
     input [`DATA_WIDTH - 1:0] wdata,
    
@@ -19,18 +19,13 @@ module myCPU_regFile(
 
 );
 
-    wire[31:0] data2write = ( {8{wen[0]}} && wdata[7 :0 ] ) ||
-                            ( {8{wen[1]}} && wdata[15:8 ] ) ||
-                            ( {8{wen[2]}} && wdata[23:16] ) ||
-                            ( {8{wen[3]}} && wdata[31:24] ) ;
-
 	reg[31:0] rf[31:0];
 
 	// write the register file 
 	always @(posedge clk) 
     begin 
-        if(|wen) 
-            rf[waddr] <= data2write;
+        if(wen) 
+            rf[waddr] <= wdata;
     end
 
     // read 1
