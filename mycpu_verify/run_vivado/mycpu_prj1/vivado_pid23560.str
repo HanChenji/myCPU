@@ -3228,3 +3228,106 @@ selectButton(RDIResource.BaseDialog_CANCEL, "Cancel"); // a (F)
 dismissDialog("Settings"); // F (cp)
 // TclEventType: WAVEFORM_UPDATE_WAVEFORM
 // HMemoryUtils.trashcanNow. Engine heap size: 1,300 MB. GUI used memory: 95 MB. Current time: 10/15/20, 2:43:18 PM CST
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Tcl Message: update_compile_order -fileset sources_1 
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// HMemoryUtils.trashcanNow. Engine heap size: 1,300 MB. GUI used memory: 109 MB. Current time: 10/15/20, 3:13:18 PM CST
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Tcl Message: update_compile_order -fileset sources_1 
+// HMemoryUtils.trashcanNow. Engine heap size: 1,300 MB. GUI used memory: 109 MB. Current time: 10/15/20, 3:43:19 PM CST
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// HMemoryUtils.trashcanNow. Engine heap size: 1,300 MB. GUI used memory: 109 MB. Current time: 10/15/20, 4:13:19 PM CST
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// HMemoryUtils.trashcanNow. Engine heap size: 1,300 MB. GUI used memory: 109 MB. Current time: 10/15/20, 4:43:19 PM CST
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// HMemoryUtils.trashcanNow. Engine heap size: 1,300 MB. GUI used memory: 109 MB. Current time: 10/15/20, 5:13:20 PM CST
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// Tcl Message: update_compile_order -fileset sources_1 
+// TclEventType: DG_GRAPH_STALE
+// TclEventType: FILE_SET_CHANGE
+// HMemoryUtils.trashcanNow. Engine heap size: 1,300 MB. GUI used memory: 109 MB. Current time: 10/15/20, 5:43:20 PM CST
+// HMemoryUtils.trashcanNow. Engine heap size: 1,300 MB. GUI used memory: 109 MB. Current time: 10/15/20, 6:13:20 PM CST
+// HMemoryUtils.trashcanNow. Engine heap size: 1,300 MB. GUI used memory: 109 MB. Current time: 10/15/20, 6:43:21 PM CST
+// HMemoryUtils.trashcanNow. Engine heap size: 1,300 MB. GUI used memory: 109 MB. Current time: 10/15/20, 7:13:21 PM CST
+// HMemoryUtils.trashcanNow. Engine heap size: 1,300 MB. GUI used memory: 109 MB. Current time: 10/15/20, 7:43:21 PM CST
+// HMemoryUtils.trashcanNow. Engine heap size: 1,300 MB. GUI used memory: 109 MB. Current time: 10/15/20, 8:13:21 PM CST
+// HMemoryUtils.trashcanNow. Engine heap size: 1,300 MB. GUI used memory: 109 MB. Current time: 10/15/20, 8:43:22 PM CST
+// HMemoryUtils.trashcanNow. Engine heap size: 1,300 MB. GUI used memory: 109 MB. Current time: 10/15/20, 9:13:22 PM CST
+// HMemoryUtils.trashcanNow. Engine heap size: 1,300 MB. GUI used memory: 109 MB. Current time: 10/15/20, 9:43:22 PM CST
+// HMemoryUtils.trashcanNow. Engine heap size: 1,300 MB. GUI used memory: 109 MB. Current time: 10/15/20, 10:13:23 PM CST
+// HMemoryUtils.trashcanNow. Engine heap size: 1,300 MB. GUI used memory: 109 MB. Current time: 10/15/20, 10:43:23 PM CST

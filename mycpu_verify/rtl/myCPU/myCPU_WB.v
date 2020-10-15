@@ -40,6 +40,13 @@ module myCPU_WB (
 
     assign writeBackData = Mode[5] ? dataLoaded : aluResult ;
 
+    assign debug_wb_pc = PC_wb ;
+    assign debug_wb_rf_wdata = writeBackData ;
+    assign debug_wb_rf_wen = {4{C5_wb}} ;
+    assign debug_wb_rf_wnum = targetReg_wb ;
+
+
+
 
 
 endmodule

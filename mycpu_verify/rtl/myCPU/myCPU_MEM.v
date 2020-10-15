@@ -13,8 +13,6 @@ module myCPU_MEM (
     input[1:0] addrLow2Bit,
     input[31:0] storeCont,
 
-    output[3:0]  memWen,
-    output[31:0] data2write
 
 );
 
@@ -53,6 +51,44 @@ module myCPU_MEM (
     assign data2write = (sizeMode==3'b011) ? swlRawData : //swl 
                         (sizeMode==3'b100) ? swrRawData : //swr
                                              storeCont  ; //others
+
+    assign data_sram_en = lsMode_mem[5] || lsMode_mem[4] ;
+    assign data_sram_addr = aluResult_mem;
+    assign data_sram_wdata = data2write;
+    assign data_sram_wen   = memWen    ;
+
+
+    // MEM/WB pipeline register 
+    reg[31:0] MEM2WB_rtCont_reg   ;
+    reg[31:0] MEM2WB_aluResult_reg;
+    reg[31:0] MEM2WB_pc_reg;
+    reg[5:0]  MEM2WB_loadStoreMode_reg;
+    reg       MEM2WB_regfileWen_reg;
+    reg[4:0]  MEM2WB_targetReg_reg;
+
+    always @(posedge clk,posedge rst)
+    begin
+        if(rst)
+        begin
+            MEM2WB_rtCont_reg        <=  32'b0 ;
+            MEM2WB_aluResult_reg     <=  32'b0 ;
+            MEM2WB_pc_reg            <=  32'b0 ;
+            MEM2WB_loadStoreMode_reg        <=   6'b0 ; 
+            MEM2WB_regfileWen_reg            <=   1'b0 ;
+            MEM2WB_targetReg_reg     <=   5'b0 ;
+        end
+        else
+        begin
+            MEM2WB_rtCont_reg        <=   ;
+            MEM2WB_aluResult_reg     <=   ;
+            MEM2WB_pc_reg            <=   ;
+            MEM2WB_loadStoreMode_reg        <=   6'b0 ; 
+            MEM2WB_regfileWen_reg            <=   1'b0 ;
+            MEM2WB_targetReg_reg     <=   5'b0 ;
+        end
+    end
+
+
 
 
 endmodule

@@ -5149,3 +5149,6 @@ Test begin!
     mycpu    : PC = 0xbfc0000c, wb_rf_wnum = 0x08, wb_rf_wdata = 0x80000000
 --------------------------------------------------------------
 $finish called at time : 2177 ns : File "E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/testbench/mycpu_tb.v" Line 160
+update_compile_order -fileset sources_1
+update_compile_order -fileset sources_1
+update_compile_order -fileset sources_1

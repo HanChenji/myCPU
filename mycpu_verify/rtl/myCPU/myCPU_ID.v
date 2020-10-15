@@ -77,9 +77,8 @@ module myCPU_ID (
     input clk,
     input rst,
 
-    input[31:0] PC,
+    input[31:0] IF2ID_pc,
     input[31:0] instruction,
-    input ifvalid,
 
     input wen,
     input[31:0] wdata,
@@ -94,23 +93,30 @@ module myCPU_ID (
     input[31:0] wb_cont,
    
     // output
-    output[31:0] A,
-    output[31:0] B,
-    output[4:0] targetReg_,
     output[31:0] jmpAddr,
-    output[31:0] storeCont,
+    output [1:0] jmp_mode,
+    output allowIn,
 
-    output[3:0] aluop,
-    output[1:0] C1__,
-    //output C2,
-    //output C3,
-    //output C4,
-    output C5__,
-    //output C6,
-    output[5:0] C8__,
+    output [31:0] ID2EXE_op1,
+    output [31:0] ID2EXE_op2,
+    output [31:0] ID2EXE_pc,
+    output [ 4:0] ID2EXE_targetReg,
+    output [31:0] ID2EXE_storeCont,
+    output [ 3:0] ID2EXE_aluOp,
+    output        ID2EXE_regfileWen,
+    output [ 5:0] ID2EXE_loadStoreMode,
+    output        ID2EXE_instValid
+  );
 
-    output allowIN
-);
+    wire[31:0] A;
+    wire[31:0] B;
+    wire[4:0] targetReg;
+    wire[31:0] storeCont;
+    wire [3:0] aluop;
+    wire  regfileWen;
+    wire [5:0] loadStoreMode;
+
+
 
     wire[5:0] op    = instruction[31:26];
     wire[5:0] func  = instruction[5:0];
@@ -234,30 +240,27 @@ module myCPU_ID (
     wire CLoad  = inst_lb | inst_lbu | inst_lh | inst_lhu | inst_lw | inst_lwl | inst_lwr ;
     wire CStore = inst_sb | inst_sh  | inst_sw | inst_swl | inst_swr ; 
 
-    wire[5:0] C8;
-    assign C8[0] = inst_lb  | inst_lh  ;
+    assign loadStoreMode[0] = inst_lb  | inst_lh  ;
 
-    assign C8[1] = inst_lh  | inst_lhu | 
-                   inst_lwl |          
-                   inst_sh  | inst_swl ; 
+    assign loadStoreMode[1] = inst_lh  | inst_lhu | 
+                                inst_lwl |          
+                                inst_sh  | inst_swl ; 
 
-    assign C8[2] = inst_lw  | inst_lwl |
-                   inst_sw  | inst_swl ;
+    assign loadStoreMode[2] = inst_lw  | inst_lwl |
+                                inst_sw  | inst_swl ;
 
-    assign C8[3] = inst_lwr | inst_swr ;
+    assign loadStoreMode[3] = inst_lwr | inst_swr ;
 
-    assign C8[4] = CStore;
-    assign C8[5] = CLoad;
+    assign loadStoreMode[4] = CStore;
+    assign loadStoreMode[5] = CLoad;
 
-    wire[1:0] C1;
-    assign C1[0] = inst_beq | inst_bne | inst_bgez | inst_bgtz | inst_blez | inst_bltz | inst_bgezal | inst_bltzal |
+    assign jmp_mode[0] = inst_beq | inst_bne | inst_bgez | inst_bgtz | inst_blez | inst_bltz | inst_bgezal | inst_bltzal |
                    inst_jr  | inst_jalr ; 
-    assign C1[1] = inst_j | inst_jal | inst_jr | inst_jalr;
+    assign jmp_mode[1] = inst_j | inst_jal | inst_jr | inst_jalr;
 
 
     //assign C3         = CLoad; // 1: mem->reg 0: alu->reg
-    wire C5;
-    assign C5         = ~(CStore | inst_beq | inst_bne | inst_bgez | inst_bgtz | inst_blez | inst_bltz | inst_j | inst_jr ); // reg file wen
+    assign regfileWen  = ~(CStore | inst_beq | inst_bne | inst_bgez | inst_bgtz | inst_blez | inst_bltz | inst_j | inst_jr ); // reg file wen
     //assign C6         = CStore; // mem wen 
     
     wire C4         = inst_xori | inst_ori | inst_andi | inst_sltiu | inst_slti | inst_addi | inst_addiu | CLoad | inst_lui; // target reg: 1: rt, 0: rd
@@ -298,18 +301,64 @@ module myCPU_ID (
     assign aluop[3] = inst_sllv | inst_sll | inst_srlv | inst_srl | inst_srav | inst_sra | inst_add | inst_addi | inst_sub;
 
     assign storeCont = rtCont;
-                                                      
-    // deal with the PAUSE
-    assign targetReg_ = PAUSE ? 5'b00000  : targetReg ;
-    assign C1_        = PAUSE ? 2'b00     : C1        ;
-    assign C5_        = PAUSE ? 1'b0      : C5        ;
-    assign C8_        = PAUSE ? 6'b000000 : C8        ;
 
-    assign C1__ = C1_ & {2{ifvalid}} ;
-    assign C5__ = C5_ & ifvalid ;
-    assign C8__ = C8_ & {6{ifvalid}} ;
+    assign allowIn = ~PAUSE ; 
 
-    assign allowIN = ~PAUSE ; 
+    wire readGo = ~PAUSE ;
+ 
+    // ID/EXE pipeline register 
+    reg [31:0] ID2EXE_a_reg, ID2EXE_b_reg;
+    reg [31:0] ID2EXE_pc_reg             ;
+    reg [ 4:0] ID2EXE_targetReg_reg      ;
+    reg [31:0] ID2EXE_storeCont_reg      ;
+    reg [ 3:0] ID2EXE_aluOp_reg          ;
+    reg        ID2EXE_regfileWen_reg     ;
+    reg [ 5:0] ID2EXE_loadStoreMode_reg  ;
+    reg        ID2EXE_instValid_reg      ;
+
+    always @(posedge clk,posedge rst)
+    begin
+        if(rst)
+        begin
+            ID2EXE_pc_reg             <= 32'b0   ;
+            ID2EXE_a_reg              <= 32'b0   ;
+            ID2EXE_b_reg              <= 32'b0   ;
+            ID2EXE_targetReg_reg      <=  5'b0   ;
+            ID2EXE_storeCont_reg      <= 32'b0   ;
+            ID2EXE_aluOp_reg          <=  4'b0   ;
+            ID2EXE_regfileWen_reg     <=  1'b0   ;
+            ID2EXE_loadStoreMode_reg  <=  6'b0   ;
+            ID2EXE_instValid_reg      <=  1'b0   ;
+        end
+        else
+        begin
+            if(readyGo)
+            begin
+                ID2EXE_pc_reg             <= PC         ;
+                ID2EXE_a_reg              <= A          ;
+                ID2EXE_b_reg              <= B          ;
+                ID2EXE_targetReg_reg      <= targetReg  ;
+                ID2EXE_storeCont_reg      <= storeCont  ;
+                ID2EXE_aluOp_reg          <= aluop      ;
+                ID2EXE_loadStoreMode_reg  <= loadStoreMode;
+                ID2EXE_regfileWen_reg     <= regfileWen ;
+            end
+            ID2EXE_instValid_reg          <= ~PAUSE   ;
+        end
+    end  
+
+    assign ID2EXE_op1 = ID2EXE_a_reg;
+    assign ID2EXE_op2 = ID2EXE_b_reg;
+    assign ID2EXE_pc  = ID2EXE_pc_reg   ;
+    assign ID2EXE_targetReg = ID2EXE_targetReg_reg      ;
+    assign ID2EXE_storeCont = ID2EXE_storeCont_reg      ;
+    assign ID2EXE_aluOp = ID2EXE_aluOp_reg          ;
+    assign ID2EXE_regfileWen = ID2EXE_regfileWen_reg      ;
+    assign ID2EXE_loadStoreMode = ID2EXE_loadStoreMode_reg  ;
+    assign ID2EXE_instValid = ID2EXE_instValid_reg ;
+
+
+
 
 endmodule
 

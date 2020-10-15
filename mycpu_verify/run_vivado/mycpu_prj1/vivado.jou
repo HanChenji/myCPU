@@ -82,3 +82,6 @@ launch_simulation
 open_wave_config E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/tb_top_behav.wcfg
 source tb_top.tcl
 run all
+update_compile_order -fileset sources_1
+update_compile_order -fileset sources_1
+update_compile_order -fileset sources_1
