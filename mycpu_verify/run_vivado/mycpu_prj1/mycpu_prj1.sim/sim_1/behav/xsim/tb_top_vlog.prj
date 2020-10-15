@@ -1,0 +1,31 @@
+# compile verilog/system verilog design source files
+sv xil_defaultlib  --include "../../../../mycpu_prj1.ip_user_files/ipstatic" \
+"D:/vivado_dir/Vivado/2018.3/data/ip/xpm/xpm_cdc/hdl/xpm_cdc.sv" \
+"D:/vivado_dir/Vivado/2018.3/data/ip/xpm/xpm_memory/hdl/xpm_memory.sv" \
+
+verilog blk_mem_gen_v8_4_2  --include "../../../../mycpu_prj1.ip_user_files/ipstatic" \
+"../../../../mycpu_prj1.ip_user_files/ipstatic/simulation/blk_mem_gen_v8_4.v" \
+
+verilog xil_defaultlib  --include "../../../../mycpu_prj1.ip_user_files/ipstatic" \
+"../../../../../../rtl/xilinx_ip/data_ram/sim/data_ram.v" \
+"../../../../../../rtl/xilinx_ip/inst_ram/sim/inst_ram.v" \
+"../../../../../../rtl/xilinx_ip/clk_pll/clk_pll_clk_wiz.v" \
+"../../../../../../rtl/xilinx_ip/clk_pll/clk_pll.v" \
+"../../../../../../rtl/BRIDGE/bridge_1x2.v" \
+"../../../../../../rtl/CONFREG/confreg.v" \
+"../../../../../../rtl/myCPU/myCPU_EX.v" \
+"../../../../../../rtl/myCPU/myCPU_ID.v" \
+"../../../../../../rtl/myCPU/myCPU_IF.v" \
+"../../../../../../rtl/myCPU/myCPU_MEM.v" \
+"../../../../../../rtl/myCPU/myCPU_WB.v" \
+"../../../../../../rtl/myCPU/myCPU_alu.v" \
+"../../../../../../rtl/myCPU/myCPU_regFile.v" \
+"../../../../../../rtl/myCPU/myCPU_top.v" \
+"../../../../../../rtl/soc_lite_top.v" \
+"../../../../../../testbench/mycpu_tb.v" \
+
+# compile glbl module
+verilog xil_defaultlib "glbl.v"
+
+# Do not sort compile order
+nosort

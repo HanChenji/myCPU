@@ -1,0 +1,23 @@
+0.6
+2018.3
+Dec  7 2018
+00:33:28
+D:/vivado_dir/Vivado/2018.3/data/ip/xpm/xpm_cdc/hdl/xpm_cdc.sv,1544171246,systemVerilog,,D:/vivado_dir/Vivado/2018.3/data/ip/xpm/xpm_memory/hdl/xpm_memory.sv,,xpm_cdc_array_single;xpm_cdc_async_rst;xpm_cdc_gray;xpm_cdc_handshake;xpm_cdc_low_latency_handshake;xpm_cdc_pulse;xpm_cdc_single;xpm_cdc_sync_rst,,,../../../../mycpu_prj1.ip_user_files/ipstatic,,,,,
+D:/vivado_dir/Vivado/2018.3/data/ip/xpm/xpm_memory/hdl/xpm_memory.sv,1544171246,systemVerilog,,,,asym_bwe_bb;xpm_memory_base;xpm_memory_dpdistram;xpm_memory_dprom;xpm_memory_sdpram;xpm_memory_spram;xpm_memory_sprom;xpm_memory_tdpram,,,../../../../mycpu_prj1.ip_user_files/ipstatic,,,,,
+E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/BRIDGE/bridge_1x2.v,1536157468,verilog,,E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/CONFREG/confreg.v,,bridge_1x2,,,../../../../mycpu_prj1.ip_user_files/ipstatic,,,,,
+E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/CONFREG/confreg.v,1533654365,verilog,,E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_EX.v,,confreg,,,../../../../mycpu_prj1.ip_user_files/ipstatic,,,,,
+E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_EX.v,1602725341,verilog,,E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_ID.v,,myCPU_EX,,,../../../../mycpu_prj1.ip_user_files/ipstatic,,,,,
+E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_ID.v,1602733432,verilog,,E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_IF.v,,myCPU_ID,,,../../../../mycpu_prj1.ip_user_files/ipstatic,,,,,
+E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_IF.v,1602726672,verilog,,E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_MEM.v,,myCPU_IF,,,../../../../mycpu_prj1.ip_user_files/ipstatic,,,,,
+E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_MEM.v,1602726336,verilog,,E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_WB.v,,myCPU_MEM,,,../../../../mycpu_prj1.ip_user_files/ipstatic,,,,,
+E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_WB.v,1602725818,verilog,,E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_alu.v,,myCPU_WB,,,../../../../mycpu_prj1.ip_user_files/ipstatic,,,,,
+E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_alu.v,1602726212,verilog,,E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_regFile.v,,myCPU_alu,,,../../../../mycpu_prj1.ip_user_files/ipstatic,,,,,
+E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_regFile.v,1602588207,verilog,,E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_top.v,,myCPU_regFile,,,../../../../mycpu_prj1.ip_user_files/ipstatic,,,,,
+E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_top.v,1602730511,verilog,,E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/soc_lite_top.v,,mycpu_top,,,../../../../mycpu_prj1.ip_user_files/ipstatic,,,,,
+E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/soc_lite_top.v,1536157782,verilog,,E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/testbench/mycpu_tb.v,,soc_lite_top,,,../../../../mycpu_prj1.ip_user_files/ipstatic,,,,,
+E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/xilinx_ip/clk_pll/clk_pll.v,1602728854,verilog,,E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/BRIDGE/bridge_1x2.v,,clk_pll,,,../../../../mycpu_prj1.ip_user_files/ipstatic,,,,,
+E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/xilinx_ip/clk_pll/clk_pll_clk_wiz.v,1602728854,verilog,,E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/xilinx_ip/clk_pll/clk_pll.v,,clk_pll_clk_wiz,,,../../../../mycpu_prj1.ip_user_files/ipstatic,,,,,
+E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/xilinx_ip/data_ram/sim/data_ram.v,1602728841,verilog,,E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/xilinx_ip/inst_ram/sim/inst_ram.v,,data_ram,,,../../../../mycpu_prj1.ip_user_files/ipstatic,,,,,
+E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/xilinx_ip/inst_ram/sim/inst_ram.v,1602728850,verilog,,E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/xilinx_ip/clk_pll/clk_pll_clk_wiz.v,,inst_ram,,,../../../../mycpu_prj1.ip_user_files/ipstatic,,,,,
+E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.sim/sim_1/behav/xsim/glbl.v,1544155481,verilog,,,,glbl,,,,,,,,
+E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/testbench/mycpu_tb.v,1533660087,verilog,,,,tb_top,,,../../../../mycpu_prj1.ip_user_files/ipstatic,,,,,

@@ -1,0 +1,84 @@
+#-----------------------------------------------------------
+# Vivado v2018.3 (64-bit)
+# SW Build 2405991 on Thu Dec  6 23:38:27 MST 2018
+# IP Build 2404404 on Fri Dec  7 01:43:56 MST 2018
+# Start of session at: Thu Oct 15 10:22:13 2020
+# Process ID: 23560
+# Current directory: E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent21020 E:\CompArchExp\EXP\ucas_CDE\mycpu_verify\run_vivado\mycpu_prj1\mycpu_prj1.xpr
+# Log file: E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/vivado.log
+# Journal file: E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.xpr
+update_compile_order -fileset sources_1
+upgrade_ip -srcset inst_ram -vlnv xilinx.com:ip:blk_mem_gen:8.4 [get_ips  inst_ram] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips inst_ram] -no_script -sync -force -quiet
+update_compile_order -fileset sources_1
+upgrade_ip -srcset data_ram -vlnv xilinx.com:ip:blk_mem_gen:8.4 [get_ips  data_ram] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips data_ram] -no_script -sync -force -quiet
+update_compile_order -fileset sources_1
+upgrade_ip -srcset clk_pll -vlnv xilinx.com:ip:clk_wiz:6.0 [get_ips  clk_pll] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips clk_pll] -no_script -sync -force -quiet
+update_compile_order -fileset sources_1
+add_files {E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_EX.v E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_top.v E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_WB.v E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_IF.v E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_alu.v E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_regFile.v E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_ID.v E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/myCPU/myCPU_MEM.v}
+update_compile_order -fileset sources_1
+generate_target all [get_files E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/xilinx_ip/data_ram/data_ram.xci]
+export_ip_user_files -of_objects [get_files E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/xilinx_ip/data_ram/data_ram.xci] -no_script -sync -force -quiet
+export_simulation -of_objects [get_files E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/xilinx_ip/data_ram/data_ram.xci] -directory E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.ip_user_files/sim_scripts -ip_user_files_dir E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.ip_user_files -ipstatic_source_dir E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.ip_user_files/ipstatic -lib_map_path [list {modelsim=E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.cache/compile_simlib/modelsim} {questa=E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.cache/compile_simlib/questa} {riviera=E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.cache/compile_simlib/riviera} {activehdl=E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.cache/compile_simlib/activehdl}] -force -quiet
+create_fileset -blockset data_ram
+set_property top data_ram [get_fileset data_ram]
+move_files -fileset [get_fileset data_ram] [get_files -of_objects [get_fileset sources_1] E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/xilinx_ip/data_ram/data_ram.xci]
+generate_target all [get_files E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/xilinx_ip/inst_ram/inst_ram.xci]
+export_ip_user_files -of_objects [get_files E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/xilinx_ip/inst_ram/inst_ram.xci] -no_script -sync -force -quiet
+export_simulation -of_objects [get_files E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/xilinx_ip/inst_ram/inst_ram.xci] -directory E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.ip_user_files/sim_scripts -ip_user_files_dir E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.ip_user_files -ipstatic_source_dir E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.ip_user_files/ipstatic -lib_map_path [list {modelsim=E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.cache/compile_simlib/modelsim} {questa=E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.cache/compile_simlib/questa} {riviera=E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.cache/compile_simlib/riviera} {activehdl=E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.cache/compile_simlib/activehdl}] -force -quiet
+create_fileset -blockset inst_ram
+set_property top inst_ram [get_fileset inst_ram]
+move_files -fileset [get_fileset inst_ram] [get_files -of_objects [get_fileset sources_1] E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/xilinx_ip/inst_ram/inst_ram.xci]
+generate_target all [get_files E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/xilinx_ip/clk_pll/clk_pll.xci]
+export_ip_user_files -of_objects [get_files E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/xilinx_ip/clk_pll/clk_pll.xci] -no_script -sync -force -quiet
+export_simulation -of_objects [get_files E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/xilinx_ip/clk_pll/clk_pll.xci] -directory E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.ip_user_files/sim_scripts -ip_user_files_dir E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.ip_user_files -ipstatic_source_dir E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.ip_user_files/ipstatic -lib_map_path [list {modelsim=E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.cache/compile_simlib/modelsim} {questa=E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.cache/compile_simlib/questa} {riviera=E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.cache/compile_simlib/riviera} {activehdl=E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/mycpu_prj1.cache/compile_simlib/activehdl}] -force -quiet
+create_fileset -blockset clk_pll
+set_property top clk_pll [get_fileset clk_pll]
+move_files -fileset [get_fileset clk_pll] [get_files -of_objects [get_fileset sources_1] E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/rtl/xilinx_ip/clk_pll/clk_pll.xci]
+launch_run {data_ram_synth_1 inst_ram_synth_1 clk_pll_synth_1}
+wait_on_run data_ram_synth_1
+
+wait_on_run data_ram_synth_1
+wait_on_run inst_ram_synth_1
+
+wait_on_run data_ram_synth_1
+wait_on_run inst_ram_synth_1
+wait_on_run clk_pll_synth_1
+
+launch_simulation
+launch_simulation
+source tb_top.tcl
+run all
+save_wave_config {E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/tb_top_behav.wcfg}
+add_files -fileset sim_1 -norecurse E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/tb_top_behav.wcfg
+set_property xsim.view E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/tb_top_behav.wcfg [get_filesets sim_1]
+save_wave_config {E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/tb_top_behav.wcfg}
+set_property -name {xsim.simulate.log_all_signals} -value {true} -objects [get_filesets sim_1]
+relaunch_sim
+run all
+save_wave_config {E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/tb_top_behav.wcfg}
+close_sim
+launch_simulation
+open_wave_config E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/tb_top_behav.wcfg
+source tb_top.tcl
+run all
+save_wave_config {E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/tb_top_behav.wcfg}
+close_sim
+launch_simulation
+open_wave_config E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/tb_top_behav.wcfg
+source tb_top.tcl
+run all
+relaunch_sim
+run all
+save_wave_config {E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/tb_top_behav.wcfg}
+close_sim
+launch_simulation
+open_wave_config E:/CompArchExp/EXP/ucas_CDE/mycpu_verify/run_vivado/mycpu_prj1/tb_top_behav.wcfg
+source tb_top.tcl
+run all
