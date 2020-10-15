@@ -24,13 +24,13 @@ module myCPU_IF (
 
 );
 
-    reg[31:0] PC,
+    reg[31:0] PC;
     reg instRequest;
     always @(posedge clk, posedge rst)
     begin
         if(rst)
         begin
-            PC <= 0xbfc00000;
+            PC <= 32'hbfc00000;
             instRequest <= 1'b1;
         end
         else 

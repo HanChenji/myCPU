@@ -25,6 +25,47 @@ module myCPU_top(
 
     wire[31:0] PC;
     wire instRequest;
+ 
+    wire[31:0] A, B;
+    wire[4:0] targetReg;
+    wire[31:0] jmpAddr;
+    wire[3:0] aluop;
+    wire[31:0] storeCont;
+    
+    wire[1:0] C1;
+    wire C3, C5, C6;
+    wire[5:0] lsMode;
+    wire allowIN;
+ 
+    wire[31:0] A_ex         ;
+    wire[31:0] PC_ex        ;
+    wire[31:0] B_ex         ;
+    wire[4:0]  targetReg_ex ;
+    wire[31:0] sotreCont_ex ;
+    wire[3:0]  aluop_ex     ;
+    wire       C5_ex        ;
+    wire[5:0]  lsMode_ex    ;
+    wire[31:0] result_ex    ;
+
+    wire[4:0]   targetReg_mem  ;
+    wire[31:0]  storeCont_mem  ;
+    wire[31:0]  PC_mem         ;
+    wire        C5_mem         ;
+    wire[5:0]   lsMode_mem     ;
+    wire[31:0]  aluResult_mem  ;
+    wire[31:0]  data2write     ;
+    wire[3:0]   memWen         ;
+
+ 
+    wire PC_wb      ;
+    wire C5_wb      ;
+    wire[5:0] lsMode_wb  ;
+    wire[4:0]  targetReg_wb ;
+    wire[31:0] aluResult_wb ;
+    wire[31:0] rtCont_wb    ;
+    wire[31:0] writeBackData ;
+
+
 
     myCPU_IF IF_module(
         // input
@@ -42,18 +83,7 @@ module myCPU_top(
     assign inst_sram_addr = PC;
     assign inst_sram_wen = 4'b0;
     assign inst_sram_wdata = 32'b0;
-    
-    wire[31:0] A, B;
-    wire[4:0] targetReg;
-    wire[31:0] jmpAddr;
-    wire[3:0] aluop;
-    wire[31:0] storeCont;
-    
-    wire[1:0] C1;
-    wire C3, C5, C6;
-    wire[5:0] lsMode;
-    wire allowIN;
-  
+       
     myCPU_ID ID_module(
         // input
         .clk(clk),
@@ -100,14 +130,14 @@ module myCPU_top(
     begin
         if(resetn)
         begin
-            ID2EXE_A         <= {32{0}}   ;
-            ID2EXE_PC        <= {32{0}}   ;
-            ID2EXE_B         <= {32{0}}   ;
-            ID2EXE_TARGETREG <= {5 {0}}   ;
-            ID2EXE_STORECONT <= {32{0}}   ;
-            ID2EXE_ALUOP     <= {4 {0}}   ;
-            ID2EXE_C5        <= 0         ;
-            ID2EXE_LSMODE    <= {6 {0}}   ;
+            ID2EXE_A         <= 32'b0   ;
+            ID2EXE_PC        <= 32'b0   ;
+            ID2EXE_B         <= 32'b0   ;
+            ID2EXE_TARGETREG <=  5'b0   ;
+            ID2EXE_STORECONT <= 32'b0   ;
+            ID2EXE_ALUOP     <=  4'b0   ;
+            ID2EXE_C5        <=  1'b0   ;
+            ID2EXE_LSMODE    <=  6'b0   ;
         end
         else
         begin
@@ -122,15 +152,14 @@ module myCPU_top(
         end
     end  
 
-    wire[31:0] A_ex = ID2EXE_A                  ;
-    wire[31:0] PC_ex = ID2EXE_PC                ;
-    wire[31:0] B_ex = ID2EXE_B                  ;
-    wire[4:0]  targetReg_ex = ID2EXE_TARGETREG  ;
-    wire[31:0] sotreCont_ex = ID2EXE_STORECONT  ;
-    wire[3:0]  aluop_ex = ID2EXE_ALUOP          ;
-    wire       C5_ex = ID2EXE_C5                ;
-    wire[5:0]  lsMode_ex = ID2EXE_LSMODE        ;
-    wire[31:0] result_ex;
+    assign A_ex = ID2EXE_A                  ;
+    assign PC_ex = ID2EXE_PC                ;
+    assign B_ex = ID2EXE_B                  ;
+    assign targetReg_ex = ID2EXE_TARGETREG  ;
+    assign sotreCont_ex = ID2EXE_STORECONT  ;
+    assign aluop_ex = ID2EXE_ALUOP          ;
+    assign C5_ex = ID2EXE_C5                ;
+    assign lsMode_ex = ID2EXE_LSMODE        ;
 
     myCPU_EX EX_module(
         //input
@@ -154,12 +183,12 @@ module myCPU_top(
     begin
         if(resetn)
         begin
-            EXE2MEM_TARGETREG   <=  {5 {0}}  ;
-            EXE2MEM_STORECONT   <=  {32{0}}  ;
-            EXE2MEM_PC          <=  {32{0}}  ;
-            EXE2MEM_C5          <=  {1 {0}}  ;
-            EXE2MEM_LSMODE      <=  {6 {0}}  ;
-            EXE2MEM_ALURESULT   <=  { {0}}   ;
+            EXE2MEM_TARGETREG   <=   5'b0 ;
+            EXE2MEM_STORECONT   <=  32'b0 ;
+            EXE2MEM_PC          <=  32'b0 ;
+            EXE2MEM_C5          <=   1'b0 ;
+            EXE2MEM_LSMODE      <=   6'b0 ;
+            EXE2MEM_ALURESULT   <=   1'b0 ;
         end
         else
         begin
@@ -173,14 +202,12 @@ module myCPU_top(
     end
 
 
-    wire[4:0]   targetReg_mem = EXE2MEM_TARGETREG ;
-    wire[31:0]  storeCont_mem = EXE2MEM_STORECONT ;
-    wire[31:0]  PC_mem        = EXE2MEM_PC        ;
-    wire        C5_mem        = EXE2MEM_C5        ;
-    wire[5:0]   lsMode_mem    = EXE2MEM_LSMODE    ;
-    wire[31:0]  aluResult_mem = EXE2MEM_ALURESULT ;
-    wire[31:0]  data2write                        ;
-    wire[3:0]   memWen                            ;
+    assign targetReg_mem = EXE2MEM_TARGETREG ;
+    assign storeCont_mem = EXE2MEM_STORECONT ;
+    assign PC_mem        = EXE2MEM_PC        ;
+    assign C5_mem        = EXE2MEM_C5        ;
+    assign lsMode_mem    = EXE2MEM_LSMODE    ;
+    assign aluResult_mem = EXE2MEM_ALURESULT ;
 
     assign data_sram_en = lsMode_mem[5] || lsMode_mem[4] ;
     assign data_sram_addr = aluResult_mem;
@@ -212,12 +239,12 @@ module myCPU_top(
     begin
         if(resetn)
         begin
-            MEM2WB_RTCONT        <=  {32{0}};
-            MEM2WB_ALURESULT     <=  {32{0}};
-            MEM2WB_PC            <=  {32{0}};
-            MEM2WB_LSMODE        <=  {6 {0}}; 
-            MEM2WB_C5            <=  {1 {0}};
-            MEM2WB_TARGETREG     <=  {5 {0}};
+            MEM2WB_RTCONT        <=  32'b0 ;
+            MEM2WB_ALURESULT     <=  32'b0 ;
+            MEM2WB_PC            <=  32'b0 ;
+            MEM2WB_LSMODE        <=   6'b0 ; 
+            MEM2WB_C5            <=   1'b0 ;
+            MEM2WB_TARGETREG     <=   5'b0 ;
         end
         else
         begin
@@ -230,13 +257,12 @@ module myCPU_top(
         end
     end
 
-    wire PC_wb = MEM2WB_PC;
-    wire lsMode_wb = MEM2WB_LSMODE ;
-    wire C5_wb = MEM2WB_C5 ;
-    wire[4:0]  targetReg_wb  = MEM2WB_TARGETREG  ;
-    wire[31:0] aluResult_wb = MEM2WB_ALURESULT ;
-    wire[31:0] rtCont_wb = MEM2WB_RTCONT ;
-    wire[31:0] writeBackData ;
+    assign PC_wb = MEM2WB_PC;
+    assign lsMode_wb = MEM2WB_LSMODE ;
+    assign C5_wb = MEM2WB_C5 ;
+    assign targetReg_wb  = MEM2WB_TARGETREG  ;
+    assign aluResult_wb = MEM2WB_ALURESULT ;
+    assign rtCont_wb = MEM2WB_RTCONT ;
 
     myCPU_WB WB_module (
         // input 

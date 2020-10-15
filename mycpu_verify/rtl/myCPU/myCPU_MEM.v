@@ -18,14 +18,15 @@ module myCPU_MEM (
 
 );
 
-    wire[31:0] swlRawData = (addrLow2Bit==2'b00) ? {24{0},storeCont[31:24]} :
-                            (addrLow2Bit==2'b01) ? {16{0},storeCont[31:16]} :
-                            (addrLow2Bit==2'b10) ? { 8{0},storeCont[31:8]} :
+    wire[31:0] swlRawData = (addrLow2Bit==2'b00) ? { {24{1'b0}}, storeCont[31:24] } :
+                            (addrLow2Bit==2'b01) ? { {16{1'b0}}, storeCont[31:16] } :
+                            (addrLow2Bit==2'b10) ? { { 8{1'b0}}, storeCont[31:8 ] } :
                                                    storeCont ;
+
     wire[31:0] swrRawData = (addrLow2Bit==2'b00) ? storeCont :
-                            (addrLow2Bit==2'b01) ? {storeCont[23:0],8{0}} :
-                            (addrLow2Bit==2'b10) ? {storeCont[15:0],16{0}} :
-                                                   {storeCont[7:0],24{0}} ;
+                            (addrLow2Bit==2'b01) ? {storeCont[23:0], { 8{1'b0}} } :
+                            (addrLow2Bit==2'b10) ? {storeCont[15:0], {16{1'b0}} } :
+                                                   {storeCont[7:0 ], {24{1'b0}} } ;
 
 
     wire[2:0] sizeMode = Mode[3:1];

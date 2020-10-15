@@ -10,7 +10,7 @@ module myCPU_WB (
     input[31:0] data_sram_rdata,
     input[5 :0] Mode,
 
-    output[31:0] writeBackData,
+    output[31:0] writeBackData
 );
 
     wire[1:0] addrLow2Bit = aluResult[1:0] ;
@@ -29,14 +29,14 @@ module myCPU_WB (
     wire[2:0] sizeMode = Mode[3:1];
     wire      signExt  = Mode[0]  ;
 
-    wire[31:0] dataLoaded =    (sizeMode==3'b000 && signExt  ) ? {24{data_sram_rdata[7]},data_sram_rdata[7:0]}   :
-                               (sizeMode==3'b000 && ~signExt ) ? {24{0},data_sram_rdata[7:0]}                    :
-                               (sizeMode==3'b001 && signExt  ) ? {16{data_sram_rdata[15]},data_sram_rdata[15:0]} :
-                               (sizeMode==3'b001 && ~signExt ) ? {16{0},data_sram_rdata[15:0]}                   :
-                               (sizeMode==3'b010             ) ? data_sram_rdata                                 :
-                               (sizeMode==3'b011             ) ? lwlRawData                                      : //lwl
-                               (sizeMode==3'b100             ) ? lwrRawData                                      : // lwr
-                                                                 {32{0}}                                         ; 
+    wire[31:0] dataLoaded =    (sizeMode==3'b000 && signExt  ) ? { {24{data_sram_rdata[7]}}, data_sram_rdata[7:0] }   :
+                               (sizeMode==3'b000 && ~signExt ) ? { {24'b0}, data_sram_rdata[7:0] }                    :
+                               (sizeMode==3'b001 && signExt  ) ? { {16{data_sram_rdata[15]}}, data_sram_rdata[15:0] } :
+                               (sizeMode==3'b001 && ~signExt ) ? { {16'b0}, data_sram_rdata[15:0] }                   :
+                               (sizeMode==3'b010             ) ? data_sram_rdata                                      :
+                               (sizeMode==3'b011             ) ? lwlRawData                                           : //lwl
+                               (sizeMode==3'b100             ) ? lwrRawData                                           : // lwr
+                                                                 32'b0                                                ; 
 
     assign writeBackData = Mode[5] ? dataLoaded : aluResult ;
 

@@ -119,10 +119,10 @@ module myCPU_ID (
     wire[4:0] ra    = instruction[10:6];
     
     wire[31:0] signExtedIm = { {17{instruction[15]}}, instruction[14:0] };
-    wire[31:0] unsignExtedIm = { 16'd0, instruction[15:0] )};
-    wire[31:0] unsignExtedRa = { 27'd0, ra };
-    wire[31:0] upperIm = {instruction[15:0],16{0}};
-    wire[31:0] zeroExtedIm = {16{0},instruction[15:0]};
+    wire[31:0] unsignExtedIm = { {16{1'b0}}, instruction[15:0] };
+    wire[31:0] unsignExtedRa = { {27{1'b0}}, ra };
+    wire[31:0] upperIm = {instruction[15:0], {16{1'b0}} };
+    wire[31:0] zeroExtedIm = { {16{1'b0}} ,instruction[15:0] };
 
     wire[31:0] rsCont_, rtCont_;
     wire[31:0] rsCont, rtCont;
@@ -191,11 +191,11 @@ module myCPU_ID (
 
     wire inst_j     = op==6'b000010;
     wire inst_jal   = op==6'b000011;
-    wire inst_jr    = op==6'b000000 && instruction[20:0]=={17{0},4'b1000};
+    wire inst_jr    = op==6'b000000 && instruction[20:0]=={ {17{1'b0}}, {4'b1000} };
     wire inst_jalr  = op==6'b000000 && rt==5'b00000 && ra==5'b00000 && func==5'b001001;
 
 
-    wire rsValid = ~(inst_lui||inst_all||inst_sra||inst_srl||inst_j||inst_jal);
+    wire rsValid = ~(inst_lui||inst_sll||inst_sra||inst_srl||inst_j||inst_jal);
     wire rtValid = ~(inst_addi||inst_addiu||inst_slti||inst_sltiu||inst_andi||inst_lui||inst_ori||inst_xori||inst_bgez_||inst_bgtz_||inst_blez_||inst_bltz_||inst_bgezal_||inst_bltzal_||inst_j||inst_jal||inst_jr||inst_jalr||inst_lb||inst_lbu||inst_lh||inst_lhu||inst_lw||inst_lwl||inst_lwr);
 
    // next codes are for the bypass 
@@ -203,13 +203,13 @@ module myCPU_ID (
    wire PAUSE2 = ( rs==targetRegOfMinus2Inst[4:0]   && rsValid && targetRegOfMinus2Inst[5] ) || ( rt==targetRegOfMinus2Inst[4:0] && rtValid && targetRegOfMinus2Inst[5] ) ;
    wire PAUSE = PAUSE1 || PAUSE2 ;
 
-   assign rsCont = (PAUSE                                                                  ) ? {32{0}}     : // stall
+   assign rsCont = (PAUSE                                                                  ) ? {32{1'b0}}  : // stall
                    (rs==targetRegOfMinus1Inst[4:0] && rsValid && ~targetRegOfMinus1Inst[5] ) ? ex2mem_cont :
                    (rs==targetRegOfMinus2Inst[4:0] && rsValid && ~targetRegOfMinus2Inst[5] ) ? mem2wb_cont :
                    (rs==targetRegOfMinus3Inst[4:0] && rsValid                              ) ? wb_cont     :
                                                                                                rsCont_     ;
 
-   assign rtCont = (PAUSE                                                                  ) ? {32{0}}     : // stall
+   assign rtCont = (PAUSE                                                                  ) ? {32{1'b0}}  : // stall
                    (rt==targetRegOfMinus1Inst[4:0] && rtValid && ~targetRegOfMinus1Inst[5] ) ? ex2mem_cont :
                    (rt==targetRegOfMinus2Inst[4:0] && rtValid && ~targetRegOfMinus2Inst[5] ) ? mem2wb_cont :
                    (rt==targetRegOfMinus3Inst[4:0] && rtValid                              ) ? wb_cont     :
@@ -264,7 +264,7 @@ module myCPU_ID (
     wire C7         = inst_sll | inst_srl | inst_sra; // 1: ra->A 0: rs->A
 
     wire branchL31 = inst_bgezal | inst_bltzal |  inst_jal ;
-    wire branchLRd = inst_jalr
+    wire branchLRd = inst_jalr ;
        
     assign A = C7        ? unsignExtedRa : 
                branchL31 ? PC            :
@@ -272,8 +272,8 @@ module myCPU_ID (
                            rsCont        ;
     assign B = C2        ? signExtedIm :
                inst_lui  ? upperIm     :
-               branchL31 ? 32'b1000    :
-               branchLRd ? 32'b1000    :
+               branchL31 ? { {28{1'b0}}, {4'b1000} } :
+               branchLRd ? { {28{1'b0}}, {4'b1000} } :
                inst_andi ? zeroExtedIm :
                inst_ori  ? zeroExtedIm :
                inst_xori ? zeroExtedIm :
@@ -286,9 +286,9 @@ module myCPU_ID (
                                    rd       ;
     //assign signedImmediate = signExtedIm;
     assign jmpAddr  = C1==2'b01 ? signExtedIm << 2 :
-                      C1==2'b10 ? {PC[31:28],instruction[25:0],2'd0} : 
+                      C1==2'b10 ? { PC[31:28],instruction[25:0],{2'b00} } : 
                       C1==2'b11 ? rsCont :
-                                  {32{0}};
+                                  {32{1'b0}};
 
     
     assign aluop[0] = inst_subu | inst_sltu | inst_sltiu | inst_or | inst_ori | inst_lui | inst_nor | inst_srav | inst_sra | inst_sub;
