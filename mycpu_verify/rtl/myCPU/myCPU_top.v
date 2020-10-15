@@ -1,6 +1,6 @@
 
 
-module myCPU_top(
+module mycpu_top(
     input            clk,
     input            resetn,            //low active
 
@@ -23,8 +23,10 @@ module myCPU_top(
     output  [31:0]   debug_wb_rf_wdata
 );
 
+    wire rst = ~ resetn ;
     wire[31:0] PC;
     wire instRequest;
+    wire ifvalid;
  
     wire[31:0] A, B;
     wire[4:0] targetReg;
@@ -57,7 +59,7 @@ module myCPU_top(
     wire[3:0]   memWen         ;
 
  
-    wire PC_wb      ;
+    wire [31:0] PC_wb      ;
     wire C5_wb      ;
     wire[5:0] lsMode_wb  ;
     wire[4:0]  targetReg_wb ;
@@ -70,13 +72,14 @@ module myCPU_top(
     myCPU_IF IF_module(
         // input
         .clk(clk),
-        .rst(resetn),
+        .rst(rst),
         .offset(jmpAddr),
         .jen(C1),
         .allowIN(allowIN),
         // output
         .inst_sram_en(inst_sram_en),
         .inst_sram_addr(PC),
+        .ifvalid(ifvalid)
     );
 
     // connect the PC module with the SRAM module 
@@ -87,9 +90,10 @@ module myCPU_top(
     myCPU_ID ID_module(
         // input
         .clk(clk),
-        .rst(resetn),
+        .rst(rst),
         .PC(PC),
         .instruction(inst_sram_rdata),
+        .ifvalid(ifvalid),
 
         .wen(C5_wb),
         .wdata(writeBackData),
@@ -111,9 +115,9 @@ module myCPU_top(
         .storeCont(storeCont),
 
         .aluop(aluop),
-        .C1_(C1),
-        .C5_(C5),
-        .C8_(lsMode),
+        .C1__(C1),
+        .C5__(C5),
+        .C8__(lsMode),
         .allowIN(allowIN)
     );
  
@@ -126,9 +130,9 @@ module myCPU_top(
     reg       ID2EXE_C5          ; 
     reg[5:0]  ID2EXE_LSMODE      ;
 
-    always @(posedge clk,posedge resetn)
+    always @(posedge clk,posedge rst)
     begin
-        if(resetn)
+        if(rst)
         begin
             ID2EXE_A         <= 32'b0   ;
             ID2EXE_PC        <= 32'b0   ;
@@ -179,9 +183,9 @@ module myCPU_top(
     reg[5:0]  EXE2MEM_LSMODE    ;
     reg[31:0] EXE2MEM_ALURESULT ;
     
-    always @(posedge clk,posedge resetn)
+    always @(posedge clk,posedge rst)
     begin
-        if(resetn)
+        if(rst)
         begin
             EXE2MEM_TARGETREG   <=   5'b0 ;
             EXE2MEM_STORECONT   <=  32'b0 ;
@@ -235,9 +239,9 @@ module myCPU_top(
     //reg[31:0] MEM2WB_WRITEBACKDATA;
     reg[4:0]  MEM2WB_TARGETREG;
 
-    always @(posedge clk,posedge resetn)
+    always @(posedge clk,posedge rst)
     begin
-        if(resetn)
+        if(rst)
         begin
             MEM2WB_RTCONT        <=  32'b0 ;
             MEM2WB_ALURESULT     <=  32'b0 ;
@@ -269,9 +273,9 @@ module myCPU_top(
         .rtCont(rtCont_wb),
         .aluResult(aluResult_wb),
         .data_sram_rdata(data_sram_rdata),
-        .LodeMode(lsMode_wb),
+        .Mode(lsMode_wb),
         //output
-        .writeBackData(writeBackData),
+        .writeBackData(writeBackData)
     );
 
     assign debug_wb_pc = PC_wb ;

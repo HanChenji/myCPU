@@ -29,7 +29,7 @@ main.data:main.elf
 	${CROSS_COMPILE}objcopy -O binary -j .data $< $@ 
 
 main.elf: start.o libinst.a 
-	${CROSS_COMPILE}gcc -E -P -Umips -D_LOADER -U_MAIN $(CFLAGS) bin.lds.S -o bin.lds
+	${CROSS_COMPILE}gcc  -std=c99 -E -P -Umips -D_LOADER -U_MAIN $(CFLAGS) bin.lds.S -o bin.lds
 	${CROSS_COMPILE}ld -g -T  bin.lds  -o $@ start.o -L . -linst
 	${CROSS_COMPILE}objdump -alD $@ > test.s
 

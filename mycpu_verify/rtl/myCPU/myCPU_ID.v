@@ -79,6 +79,7 @@ module myCPU_ID (
 
     input[31:0] PC,
     input[31:0] instruction,
+    input ifvalid,
 
     input wen,
     input[31:0] wdata,
@@ -100,13 +101,13 @@ module myCPU_ID (
     output[31:0] storeCont,
 
     output[3:0] aluop,
-    output[1:0] C1_,
+    output[1:0] C1__,
     //output C2,
     //output C3,
     //output C4,
-    output C5_,
+    output C5__,
     //output C6,
-    output[5:0] C8_,
+    output[5:0] C8__,
 
     output allowIN
 );
@@ -301,8 +302,12 @@ module myCPU_ID (
     // deal with the PAUSE
     assign targetReg_ = PAUSE ? 5'b00000  : targetReg ;
     assign C1_        = PAUSE ? 2'b00     : C1        ;
-    assign C5_        = PAUSE ? 0         : C5        ;
+    assign C5_        = PAUSE ? 1'b0      : C5        ;
     assign C8_        = PAUSE ? 6'b000000 : C8        ;
+
+    assign C1__ = C1_ & {2{ifvalid}} ;
+    assign C5__ = C5_ & ifvalid ;
+    assign C8__ = C8_ & {6{ifvalid}} ;
 
     assign allowIN = ~PAUSE ; 
 

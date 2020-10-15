@@ -12,9 +12,11 @@ void binary_out(FILE* out,unsigned char* mem)
     num[5] = 32;
     num[6] = 64;
     num[7] = 128;
-    for(int i=3;i>=0;i--)
+    int i;
+    for( i=3;i>=0;i--)
     {
-        for(int j=7;j>=0;j--)
+        int j;
+        for(j=7;j>=0;j--)
         {
             if( (mem[i] & num[j] ) != 0)
                 tmp = '1';
